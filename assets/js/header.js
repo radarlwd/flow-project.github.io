@@ -37,6 +37,9 @@ document.write('<div class="znav-container znav" id="znav-container">\
                                          <a href="#">Benchmarks</a>\
                                     </li>\
                                     <li>\
+                                        <a href="/lorr/lorr.html">LORR</a>\
+                                    </li>\
+                                    <li>\
                                         <a href="JavaScript:void(0)">About</a>\
                                         <ul class="dropdown">\
                                             <li>\

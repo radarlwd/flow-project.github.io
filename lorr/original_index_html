@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="stylesheet" type="text/css" href="css/style.css" />
+
+<html>
+
+<head>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        /* Create two equal columns that floats next to each other */
+        .column {
+            float: left;
+            width: 50%;
+            padding: 10px;
+            height: 100%;
+            /* Should be removed. Only for demonstration */
+        }
+
+        /* Clear floats after the columns */
+        .row:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+
+        img {
+            /* border-radius: 100%; */
+            width: 20px;
+            height: 40px;
+        }
+
+        .images {
+            height: 100%;
+        }
+    </style>
+</head>
+
+
+<body>
+
+    <h2>
+        <center> Model Performance </center>
+    </h2>
+
+    <div id="row0" class="row">
+        <div id="col00" class="column">
+            <h2>Ring</h2>
+            <img src = "yellow_car.png" style = "float: left" >
+            <p> <font size="3"> IDM: Intelligent Driver Model <br>
+                The IDM is a continuous-time car-following model for the simulation of freeway and urban traffic
+                proposed by M. Treiber and A. Kesting. It describes the dynamics of the positions and velocities of
+                single vehicles. </font>
+            </p>
+            <img src = "blue_car.png" style= "float: left" >
+            <p id="paragraph"> <font size="3"> Select Algorithm </font></p>
+            <div id="car-container" style="display: block;">
+                <canvas id="myCanvas" width="600" height="600"
+                    style="border:1px; margin-top: 50px; margin-left: 10px; position: absolute;"></canvas>
+                <canvas id="Canvas2" width="600" height="600"
+                    style="border:1px; margin-top: 50px; margin-left: 10px; position: absolute;"></canvas>
+            </div>
+
+        </div>
+        <div id="col01" class="column">
+            <h2>Line Chart</h2>
+            <div id="lineGraph"></div>
+            <div id=btn_group1 class="btn-group" style="margin-top: 20px; margin-left: 10px;">
+                <select id="selectAlgorithmButton" class="dropbtn" title="Select a algorithm"></select>
+                <select id="selectSetupButton" class="dropbtn" title="Select a setup"></select>
+                <select id="selectParameterButton" class="dropbtn" title="Select a parameter"></select>
+                <button id="startButton" type="button" class="btn"
+                    title="Start plotting and running the ring">Start</button>
+
+                <div class="popup" onclick="myFunction()" style="font-size:18px; background-color:yellowgreen;">Click here for help
+                    <span class="popuptext" id="myPopup" style="width:300px;">1. Select a algorithm. 2. Select a Setup(different types of
+                        vehicles) 3. Check the vehicles below to plot on the graph. 4. Select a parameter to plot the graph. 5.
+                        Press "Start" button to run the Ring and plot the graph. Click me again to hide the help message.</span>
+                </div>
+            </div>
+            <h2>Check the vehicles below to plot the line graph</h2>
+            <div id=btn_group2 style="margin-top: 20px; margin-left: 10px;">
+            </div>
+            <h2>Metrics of the Selected Algorithm</h2>
+            <div id=table1>
+            </div>
+
+
+
+
+
+        </div>
+    </div>
+
+</body>
+<script>
+    // When the user clicks on div, open the popup
+    function myFunction() {
+        var popup = document.getElementById("myPopup");
+        popup.classList.toggle("show");
+    }
+</script>
+<script src="http://d3js.org/d3.v4.min.js"></script>
+<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.1.min.js"></script>
+<script src="js/file_list.js"></script>
+<script src="js/util.js"></script>
+<script src="js/ring.js"></script>
+<script src="js/script.js"></script>
+<!-- <script src="js/test.js"></script> -->
+
+</html>
