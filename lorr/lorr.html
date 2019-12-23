@@ -1,113 +1,186 @@
 <!DOCTYPE html>
 <html lang="en-US">
-<link rel="stylesheet" type="text/css" href="css/style.css" />
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--  -->
+    <!--    Document Title-->
+    <!-- =============================================-->
+    <title>FLOW</title>
+    <!--  -->
+    <!--    Favicons-->
+    <!--    =============================================-->
+    <script src="/assets/js/favicon.js"></script>
+    <meta name="theme-color" content="#ffffff">
+    <!--  -->
+    <!--    Stylesheets-->
+    <!--    =============================================-->
+    <!-- Default stylesheets-->
+    <link href="/assets/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Template specific stylesheets-->
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:100,300,400,600" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Droid+Serif:400,400i" rel="stylesheet">
+    <link href="/assets/lib/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/assets/lib/iconsmind/iconsmind.css" rel="stylesheet">
+    <link href="/assets/lib/css-hamburgers/dist/hamburgers.css" rel="stylesheet">
+    <link href="/assets/lib/remodal/dist/remodal.css" rel="stylesheet">
+    <link href="/assets/lib/remodal/dist/remodal-default-theme.css" rel="stylesheet">
+    <!-- Main stylesheet and color file-->
+    <link href="/assets/css/style.css" rel="stylesheet">
+    <link href="/assets/css/custom.css" rel="stylesheet">
+    <link href="/assets/lib/owl.carousel/dist/assets/owl.carousel.min.css" rel="stylesheet">
+    <link href="/assets/lib/owl.carousel/dist/assets/owl.theme.default.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="css/style.css" /> <!-- lorr style-->
+    <link rel="stylesheet" type="text/css" href="css/ring.css" /> <!-- lorr style-->
 
 
-    <head>
+</head>
 
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <style>
-            * {
-                box-sizing: border-box;
-            }
-    
-            /* Create two equal columns that floats next to each other */
-            .column {
-                float: left;
-                width: 50%;
-                padding: 10px;
-                height: 100%;
-                /* Should be removed. Only for demonstration */
-            }
-    
-            /* Clear floats after the columns */
-            .row:after {
-                content: "";
-                display: table;
-                clear: both;
-            }
-    
-            img {
-                /* border-radius: 100%; */
-                width: 20px;
-                height: 40px;
-            }
-    
-            .images {
-                height: 100%;
-            }
-        </style>
-    </head>
-    
-    
-    <body>
-    
-        <h2>
-            <center> Model Performance </center>
-        </h2>
-    
-        <div id="row0" class="row">
-            <div id="col00" class="column">
-                <h2>Ring</h2>
-                <img src = "yellow_car.png" style = "float: left" >
-                <p> <font size="3"> IDM: Intelligent Driver Model <br>
-                    The IDM is a continuous-time car-following model for the simulation of freeway and urban traffic
-                    proposed by M. Treiber and A. Kesting. It describes the dynamics of the positions and velocities of
-                    single vehicles. </font>
-                </p>
-                <img src = "blue_car.png" style= "float: left" >
-                <p id="paragraph"> <font size="3"> Select Algorithm </font></p>
-                <div id="car-container" style="display: block;">
-                    <canvas id="myCanvas" width="600" height="600"
-                        style="border:1px; margin-top: 50px; margin-left: 10px; position: absolute;"></canvas>
-                    <canvas id="Canvas2" width="600" height="600"
-                        style="border:1px; margin-top: 50px; margin-left: 10px; position: absolute;"></canvas>
-                </div>
-    
-            </div>
-            <div id="col01" class="column">
-                <h2>Line Chart</h2>
-                <div id="lineGraph"></div>
-                <div id=btn_group1 class="btn-group" style="margin-top: 20px; margin-left: 10px;">
-                    <select id="selectAlgorithmButton" class="dropbtn" title="Select a algorithm"></select>
-                    <select id="selectSetupButton" class="dropbtn" title="Select a setup"></select>
-                    <select id="selectParameterButton" class="dropbtn" title="Select a parameter"></select>
-                    <button id="startButton" type="button" class="btn"
-                        title="Start plotting and running the ring">Start</button>
-    
-                    <div class="popup" onclick="myFunction()" style="font-size:18px; background-color:yellowgreen;">Click here for help
-                        <span class="popuptext" id="myPopup" style="width:300px;">1. Select a algorithm. 2. Select a Setup(different types of
-                            vehicles) 3. Check the vehicles below to plot on the graph. 4. Select a parameter to plot the graph. 5.
-                            Press "Start" button to run the Ring and plot the graph. Click me again to hide the help message.</span>
+<body data-spy="scroll" data-target=".inner-link" data-offset="60">
+    <main>
+        <script src="/assets/js/header.js"></script>
+
+        <head>
+            <style>
+                * {
+                    box-sizing: border-box;
+                }
+
+                /* Create two equal columns that floats next to each other */
+                .column {
+                    float: left;
+                    width: 50%;
+                    padding: 10px;
+                    height: 100%;
+                    /* Should be removed. Only for demonstration */
+                }
+
+                /* Clear floats after the columns */
+                .row:after {
+                    content: "";
+                    display: table;
+                    clear: both;
+                }
+
+                img {
+                    /* border-radius: 100%; */
+                    width: 20px;
+                    height: 40px;
+                }
+
+                .images {
+                    height: 100%;
+                }
+            </style>
+        </head>
+
+        <body>
+
+            <h2>
+                <center> Model Performance </center>
+            </h2>
+
+            <div id="row0" class="row">
+                <div id="col00" class="column">
+                    <div class="ring-legends" style="left: 10;">
+                        <img src="yellow_car.png" hspace="20" align="left">
+                        <p>
+                            <font size="3"> IDM: Intelligent Driver Model <br>
+                                The IDM is a continuous-time car-following model for the simulation of freeway and urban
+                                traffic
+                                proposed by M. Treiber and A. Kesting. It describes the dynamics of the positions and
+                                velocities of
+                                single vehicles. </font>
+                        </p>
+                        <img src="blue_car.png" hspace="20" align="left">
+                        <p id="paragraph" style="margin-left: 60px">
+                            <font size="3"> Select Algorithm </font>
+                        </p>
                     </div>
+                    <div id="car-container" style="display: block;">
+                        <canvas id="myCanvas" width="600" height="600"
+                            style="border:1px; margin-top: 50px; margin-left: 10px; position: absolute;"></canvas>
+                        <canvas id="Canvas2" width="600" height="600"
+                            style="border:1px; margin-top: 50px; margin-left: 10px; position: absolute;"></canvas>
+                    </div>
+
                 </div>
-                <h2>Check the vehicles below to plot the line graph</h2>
-                <div id=btn_group2 style="margin-top: 20px; margin-left: 10px;">
+                <div id="col01" class="column">
+                    <div id="lineGraph"></div>
+                    <div id=btn_group1 class="btn-group" style="margin-top: 20px; margin-left: 10px;">
+                        <select id="selectAlgorithmButton" class="dropbtn" title="Select a algorithm"></select>
+                        <select id="selectSetupButton" class="dropbtn" title="Select a setup"></select>
+                        <select id="selectParameterButton" class="dropbtn" title="Select a parameter"></select>
+                        <button id="startButton" type="button" class="btn"
+                            title="Start plotting and running the ring">Start</button>
+
+                        <div class="popup" onclick="myFunction()" style="font-size:18px; background-color:yellowgreen;">
+                            Click here for help
+                            <span class="popuptext" id="myPopup" style="width:300px;">1. Select a algorithm. 2. Select a
+                                Setup(different types of
+                                vehicles) 3. Check the vehicles below to plot on the graph. 4. Select a parameter to
+                                plot the graph. 5.
+                                Press "Start" button to run the Ring and plot the graph. Click me again to hide the help
+                                message.</span>
+                        </div>
+                    </div>
+                    <p>
+                        <font size="3">Check the vehicles below to plot the line graph</font>
+                    </p>
+                    <div id=btn_group2 style="margin-top: 20px; margin-left: 10px;">
+                    </div>
+                    <p>
+                        <font size="3">Metrics of the Selected Algorithm</font>
+                    </p>
+                    <div id=table1>
+                    </div>
+
+
+
+
+
                 </div>
-                <h2>Metrics of the Selected Algorithm</h2>
-                <div id=table1>
-                </div>
-    
-    
-    
-    
-    
             </div>
-        </div>
-    
-    </body>
-    <script>
-        // When the user clicks on div, open the popup
-        function myFunction() {
-            var popup = document.getElementById("myPopup");
-            popup.classList.toggle("show");
-        }
-    </script>
-    <script src="http://d3js.org/d3.v4.min.js"></script>
-    <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.1.min.js"></script>
-    <script src="js/file_list.js"></script>
-    <script src="js/util.js"></script>
-    <script src="js/ring.js"></script>
-    <script src="js/script.js"></script>
+
+        </body>
+        <script>
+            // When the user clicks on div, open the popup
+            function myFunction() {
+                var popup = document.getElementById("myPopup");
+                popup.classList.toggle("show");
+            }
+        </script>
+        <script src="http://d3js.org/d3.v4.min.js"></script>
+        <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.1.min.js"></script>
+        <script src="js/file_list.js"></script>
+        <script src="js/util.js"></script>
+        <script src="js/ring.js"></script>
+        <script src="js/script.js"></script>
+
+
+
+
+
+
+        <hr class="my-0">
+        <script src="/assets/js/footer.js"></script>
+    </main>
+    <!--  -->
+    <!--    JavaScripts-->
+    <!--    =============================================-->
+    <script src="/assets/lib/jquery/dist/jquery.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js"></script>
+    <script src="/assets/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="/assets/lib/prism/prism.js"></script>
+    <script src="/assets/lib/jquery.mb.ytplayer/dist/jquery.mb.YTPlayer.js"></script>
+    <script src="/assets/lib/rellax/rellax.js"></script>
+    <script src="/assets/js/core.js"></script>
+    <script src="/assets/js/main.js"></script>
+    <script src="/assets/lib/typed.js/dist/typed.min.js"></script>
+    <script src="/assets/lib/owl.carousel/dist/owl.carousel.min.js"></script>
+
+</body>
 
 </html>

@@ -80,7 +80,7 @@ function createelements(posofreg, posofauto) {
         otherobj.id = ('IDM' + (posofreg[i]));
         namesofreg.push('IDM' + (posofreg[i]));
         otherobj.setAttribute('src', 'yellow_car.png');
-        otherobj.style.position = "absolute";
+        otherobj.style.position = "relative";
         obj.appendChild(otherobj);
         document.getElementById("car-container").appendChild(obj);
     }
@@ -91,7 +91,7 @@ function createelements(posofreg, posofauto) {
         otherobj.id = ('AUTO' + (posofauto[i]));
         namesofauto.push('AUTO' + (posofauto[i]))
         otherobj.setAttribute('src', 'blue_car.png');
-        otherobj.style.position = "absolute";
+        otherobj.style.position = "relative";
         obj.appendChild(otherobj);
         document.getElementById("car-container").appendChild(obj);
     }

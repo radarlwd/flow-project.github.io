@@ -109,12 +109,12 @@ function addCarCheckboxes(car_names) {
     // }
     // str = "<label class="container">Two, <input type="checkbox">, <span class="checkmark">,</span> </label>";
 
-    var allCheckbox = $(`<label id = "allCheckbox" class="container"> ALL <input type="checkbox"> <span class="checkmark"></span> </label>`);
+    var allCheckbox = $(`<label id = "allCheckbox" class="checkbox-container"> ALL <input type="checkbox"> <span class="checkmark"></span> </label>`);
     $("#btn_group2").append(allCheckbox);
 
 
     for (i = 0; i < car_names.length; ++i) {
-        var $checkbox = $(`<label class="container">` + car_names[i] + `<input type="checkbox"> <span class="checkmark"></span> </label>`);
+        var $checkbox = $(`<label class="checkbox-container">` + car_names[i] + `<input type="checkbox"> <span class="checkmark"></span> </label>`);
         $("#btn_group2").append($checkbox);
         $checkbox.on("change", function (d) {
 
