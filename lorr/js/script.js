@@ -96,19 +96,6 @@ function addLine() {
 }
 
 function addCarCheckboxes(car_names) {
-    // for (i = 0; i < 22; ++i) {
-    //     var checkbox = document.createElement("input");
-    //     checkbox.type = "checkbox";
-    //     checkbox.id = "carCheck" + i;
-    //     document.getElementById("btn_group2").appendChild(checkbox);
-
-    //     var label = document.createElement("Label");
-    //     label.setAttribute("for", "carCheck" + i);
-    //     label.innerHTML = "car" + i;
-    //     document.getElementById("btn_group2").appendChild(label);
-    // }
-    // str = "<label class="container">Two, <input type="checkbox">, <span class="checkmark">,</span> </label>";
-
     var allCheckbox = $(`<label id = "allCheckbox" class="checkbox-container"> ALL <input type="checkbox"> <span class="checkmark"></span> </label>`);
     $("#btn_group2").append(allCheckbox);
 
@@ -512,12 +499,12 @@ function updateDropDownOptions(data) {
 }
 
 function extractAlgorithmsAndSetups(algorithms, filename_dict, algo_setup_dict, file_strs) {
-    //"data/raw_data/IDM_AVRider_AUG--0IDM_22AUG--sugiyama_20191014-1314411571084081.113794-emission.csv"
-
+    //original "data/raw_data/IDM_AVRider_AUG--0IDM_22AUG--sugiyama_20191014-1314411571084081.113794-emission.csv"
+    //current format: data/raw_data/IDM_AVRider_AUG--0IDM_22AUG
     var algos = [];
     for (i = 0; i < file_strs.length; ++i) {
-        // var myRegex = /(.*\/)(.*)(--)(.*)(--)(.*)/g;
-        var myRegex = /(.*)(--)(.*)(--)(.*)/g;
+        // var myRegex = /(.*)(--)(.*)(--)(.*)/g;
+        var myRegex = /(.*)(--)(.*)(.csv)/g;
 
         var filename = file_strs[i];
         var filename = filename.replace(/^.*[\\\/]/, '')
@@ -539,7 +526,6 @@ function extractAlgorithmsAndSetups(algorithms, filename_dict, algo_setup_dict, 
     for (i = 0; i < uniqueAlgos.length; ++i) {
         algorithms.push(uniqueAlgos[i]);
     }
-
 }
 
 function loadMetricsFileNames(metric_filename_dict, file_strs) {
@@ -568,54 +554,7 @@ function changeverticalTimeLinePos(curr_x) {
 }
 
 function loadMetricsFile(filename) {
-
-
     d3.select("#metrics_table").remove();
-
-
-
-    // function tabulate(data, columns) {
-    //     // https://bl.ocks.org/d3noob/5d47df5374d210b6f651
-    //     var table = d3.select("#table1").append("table")
-    //         .attr("style", "margin-left: 250px")
-    //         .attr("id", "metrics_table")
-    //         .attr("style", "margin-left: 200px")
-    //         .style("border-collapse", "collapse")
-    //         .style("border", "2px black solid"),
-    //         thead = table.append("thead"),
-    //         tbody = table.append("tbody");
-
-    //     // append the header row
-    //     thead.append("tr")
-    //         .selectAll("th")
-    //         .data(columns)
-    //         .enter()
-    //         .append("th")
-    //         .text(function (column) { return column; })
-    //         .style("font-size", "18px");
-
-    //     // create a row for each object in the data
-    //     var rows = tbody.selectAll("tr")
-    //         .data(data)
-    //         .enter()
-    //         .append("tr");
-
-    //     // create a cell in each row for each column
-    //     var cells = rows.selectAll("td")
-    //         .data(function (row) {
-    //             return columns.map(function (column) {
-    //                 return { column: column, value: row[column] };
-    //             });
-    //         })
-    //         .enter()
-    //         .append("td")
-    //         .attr("style", "font-family: Courier")
-    //         .style("font-size", "18px")
-    //         .html(function (d) { return d.value; });
-
-    //     return table;
-    // }
-
     // The table generation function
     function tabulate(data, columns) {
         var table = d3.select("#table1").append("table")
@@ -656,20 +595,7 @@ function loadMetricsFile(filename) {
 
         return table;
     }
-
-    // render the table
-    // var peopleTable = tabulate(data, ["date", "close", "open", "diff"]);
-
-    // peopleTable.selectAll("tbody tr")
-    //     .sort(function (a, b) {
-    //         return d3.descending(a.close, b.close);
-    //     });
-
-    // peopleTable.selectAll("thead th")
-    //     .text(function (column) {
-    //         return column.charAt(0).toUpperCase() + column.substr(1);
-    //     });
-
+    console.log("loading metrics " + filename);
     d3.csv(filename, function (error, data) {
         if (error) throw error;
         var metrics_table = tabulate(data, ["stableT", "stableSpd", "MaxGap", "AvgFuelRate", "VMT"]);
