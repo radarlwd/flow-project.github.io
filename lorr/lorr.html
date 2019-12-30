@@ -77,75 +77,104 @@
         </head>
 
         <body>
+            <div id="mySidenav" class="sidenav">
+                <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+                <a href="#">About</a>
+                <a href="#">Services</a>
+                <a href="#">Clients</a>
+                <a href="#">Contact</a>
+            </div>
 
-            <h2>
-                <center> Model Performance </center>
-            </h2>
+            <div id="main"></div>
+                <h2>
+                    <center> Model Performance </center>
+                </h2>
 
-            <div id="row0" class="row">
-                <div id="col00" class="column">
-                    <div class="ring-legends" style="left: 10;">
-                        <img src="yellow_car.png" hspace="20" align="left">
-                        <p>
-                            <font size="3"> IDM: Intelligent Driver Model <br>
-                                The IDM is a continuous-time car-following model for the simulation of freeway and urban
-                                traffic
-                                proposed by M. Treiber and A. Kesting. It describes the dynamics of the positions and
-                                velocities of
-                                single vehicles. </font>
-                        </p>
-                        <img src="blue_car.png" hspace="20" align="left">
-                        <p id="paragraph" style="margin-left: 60px">
-                            <font size="3"> Select Algorithm </font>
-                        </p>
-                    </div>
-                    <div id="car-container" style="display: block;">
-                        <canvas id="myCanvas" width="600" height="600"
-                            style="border:1px; margin-top: 50px; margin-left: 10px; position: absolute;"></canvas>
-                        <canvas id="Canvas2" width="600" height="600"
-                            style="border:1px; margin-top: 50px; margin-left: 10px; position: absolute;"></canvas>
-                    </div>
-
-                </div>
-                <div id="col01" class="column">
-                    <div id="lineGraph"></div>
-                    <div id=btn_group1 class="btn-group" style="margin-top: 20px; margin-left: 10px;">
-                        <select id="selectAlgorithmButton" class="dropbtn" title="Select a algorithm"></select>
-                        <select id="selectSetupButton" class="dropbtn" title="Select a setup"></select>
-                        <select id="selectParameterButton" class="dropbtn" title="Select a parameter"></select>
-                        <button id="startButton" type="button" class="btn"
-                            title="Start plotting and running the ring">Start</button>
-
-                        <div class="popup" onclick="myFunction()" style="font-size:18px; background-color:yellowgreen;">
-                            Click here for help
-                            <span class="popuptext" id="myPopup" style="width:300px;">1. Select a algorithm. 2. Select a
-                                Setup(different types of
-                                vehicles) 3. Check the vehicles below to plot on the graph. 4. Select a parameter to
-                                plot the graph. 5.
-                                Press "Start" button to run the Ring and plot the graph. Click me again to hide the help
-                                message.</span>
+                <div id="row0" class="row">
+                    <div id="col00" class="column">
+                        <div class="ring-legends" style="left: 10;">
+                            <img src="yellow_car.png" hspace="20" align="left">
+                            <p>
+                                <font size="3"> IDM: Intelligent Driver Model <br>
+                                    The IDM is a continuous-time car-following model for the simulation of freeway and
+                                    urban
+                                    traffic
+                                    proposed by M. Treiber and A. Kesting. It describes the dynamics of the positions
+                                    and
+                                    velocities of
+                                    single vehicles. </font>
+                            </p>
+                            <img src="blue_car.png" hspace="20" align="left">
+                            <p id="paragraph" style="margin-left: 60px">
+                                <font size="3"> Select Algorithm </font>
+                            </p>
                         </div>
+                        <div id="car-container" style="display: block;">
+                            <canvas id="myCanvas" width="600" height="600"
+                                style="border:1px; margin-top: 50px; margin-left: 10px; position: absolute;"></canvas>
+                            <canvas id="Canvas2" width="600" height="600"
+                                style="border:1px; margin-top: 50px; margin-left: 10px; position: absolute;"></canvas>
+                        </div>
+
                     </div>
-                    <p>
-                        <font size="3">Check the vehicles below to plot the line graph</font>
-                    </p>
-                    <div id=btn_group2 style="margin-top: 20px; margin-left: 10px;">
+                    <div id="col01" class="column">
+                        <div id="lineGraph"></div>
+                        <div id=btn_group1 class="btn-group" style="margin-top: 20px; margin-left: 10px;">
+
+
+                            <span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776; open</span>
+
+                            <select id="selectAlgorithmButton" class="dropbtn" title="Select a algorithm"></select>
+                            <select id="selectSetupButton" class="dropbtn" title="Select a setup"></select>
+                            <select id="selectParameterButton" class="dropbtn" title="Select a parameter"></select>
+                            <button id="startButton" type="button" class="btn"
+                                title="Start plotting and running the ring">Start</button>
+
+                            <div class="popup" onclick="myFunction()"
+                                style="font-size:18px; background-color:yellowgreen;">
+                                Click here for help
+                                <span class="popuptext" id="myPopup" style="width:300px;">1. Select a algorithm. 2.
+                                    Select a
+                                    Setup(different types of
+                                    vehicles) 3. Check the vehicles below to plot on the graph. 4. Select a parameter to
+                                    plot the graph. 5.
+                                    Press "Start" button to run the Ring and plot the graph. Click me again to hide the
+                                    help
+                                    message.</span>
+                            </div>
+                        </div>
+                        <p>
+                            <font size="3">Check the vehicles below to plot the line graph</font>
+                        </p>
+                        <div id=btn_group2 style="margin-top: 20px; margin-left: 10px;">
+                        </div>
+                        <p>
+                            <font size="3">Metrics of the Selected Algorithm</font>
+                        </p>
+                        <div id=table1>
+                        </div>
+
+
+
+
+
                     </div>
-                    <p>
-                        <font size="3">Metrics of the Selected Algorithm</font>
-                    </p>
-                    <div id=table1>
-                    </div>
-
-
-
-
-
                 </div>
             </div>
 
         </body>
         <script>
+            function openNav() {
+                document.getElementById("mySidenav").style.width = "250px";
+                document.getElementById("main").style.marginRight = "250px";
+                document.body.style.backgroundColor = "rgba(0,0,0,0.4)";
+            }
+
+            function closeNav() {
+                document.getElementById("mySidenav").style.width = "0";
+                document.getElementById("main").style.marginRight = "0";
+                document.body.style.backgroundColor = "white";
+            }
             // When the user clicks on div, open the popup
             function myFunction() {
                 var popup = document.getElementById("myPopup");
