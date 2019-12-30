@@ -246,14 +246,23 @@ function addButtons() {
             select.remove(1);
         }
 
-        var option = document.createElement("option");
+        // add and sort setup options
+        var options = [];
+        for (i = 0; i < algo_setup_dict[curr].length; ++i) {
+            options.push(algo_setup_dict[curr][i]);
+        }
+        // sort alphanumeric strings
+        var collator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' });
+        options.sort(collator.compare);
 
-        for (var i = 0; i < algo_setup_dict[curr].length; i++) {
+        for (var i = 0; i < options.length; i++) {
             var option = document.createElement("option");
-            option.text = algo_setup_dict[curr][i];
-            option.value = algo_setup_dict[curr][i];
+            option.text = options[i];
+            option.value = options[i];
             select.add(option);
         }
+
+
         var myDDL1 = $('#selectSetupButton');
         myDDL1[0].selectedIndex = 0;
         var myDDL2 = $("#selectParameterButton");
@@ -280,10 +289,11 @@ function addButtons() {
                 });
 
                 var car_ids = d3.map(data, function (d) { return (d.id) }).keys();
+                var collator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' });
+                car_ids.sort(collator.compare);
 
                 deleteCarCheckboxes();
                 addCarCheckboxes(car_ids);
-                console.log("filename = " + metric_filename_dict[select]);
                 loadMetricsFile(metric_filename_dict[select]);
             });
         }
