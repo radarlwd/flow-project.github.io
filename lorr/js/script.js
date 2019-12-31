@@ -104,7 +104,7 @@ function addCarCheckboxes(car_names) {
         var $checkbox = $(`<label class="checkbox-container">` + car_names[i] + `<input type="checkbox"> <span class="checkmark"></span> </label>`);
         $("#btn_group2").append($checkbox);
         $checkbox.on("change", function (d) {
-
+            updateOverlayText(4);
             var childN = document.getElementById("btn_group2").childNodes;
             for (i = 0; i < childN.length; ++i) {
                 childN[i].style.color = "#000000";
@@ -115,6 +115,7 @@ function addCarCheckboxes(car_names) {
         })
     }
     d3.select("#allCheckbox").on("change", function (d) {
+        updateOverlayText(4);
         allCheckboxVal = !this.childNodes[1].checked;
 
         var childN = document.getElementById("btn_group2").childNodes;
@@ -165,6 +166,7 @@ function updateTextCheckboxes() {
 }
 
 function addButtons() {
+
     var algorithmGroup = ['Algorithm'];
     var setupGroup = ['Setup'];
     var parameterGroup = ['Parameter', 'abs_pos', 'CO', 'NOx', 'fuel', 'PMx', 'speed'];
@@ -177,6 +179,7 @@ function addButtons() {
 
     // d3.select("#selectParameterButton").property("disabled", false);
     startButton = d3.select("#startButton").on("click", function (d) {
+        updateOverlayText(6);
         console.log("start!!!!");
         updatePage(curParameter, curData, getCarCheckedValues());
         updateTextCheckboxes();
@@ -233,6 +236,7 @@ function addButtons() {
     // When the button is changed, run the updateChart function
     var curr;
     d3.select("#selectAlgorithmButton").on("change", function (d) {
+        updateOverlayText(2);
         startButton.property("disabled", true);
 
         curr = d3.select(this).property("value");
@@ -272,6 +276,7 @@ function addButtons() {
     })
 
     d3.select("#selectSetupButton").on("change", function (d) {
+        updateOverlayText(3);
         var select = d3.select(this).property("value");
         var key = d3.select("#selectAlgorithmButton").property("value") + select;
         var curr = data_filename_dict[key];
@@ -305,11 +310,14 @@ function addButtons() {
 
     // When the button is changed, run the updateChart function
     d3.select("#selectParameterButton").on("change", function (d) {
+        updateOverlayText(5);
         // recover the option that has been chosen
         curParameter = d3.select(this).property("value");
 
         startButton.property("disabled", false);
     })
+
+    updateOverlayText(1);
 }
 
 function updatePage(selectedOption, data, selectedKeys) {
@@ -318,7 +326,6 @@ function updatePage(selectedOption, data, selectedKeys) {
     d3.select("#vertical_time_line").remove();
     d3.select("#vertical_time_line_text").remove();
 
-    updateDropDownOptions(data);
     var dataToPlot = [];
     var curYMax = Number.NEGATIVE_INFINITY;
     var selectedData; //cars selected
@@ -504,8 +511,47 @@ function updateGraph(dataGroups, opacities) {
         .text("current time");
 }
 
-function updateDropDownOptions(data) {
+function updateOverlayText(tutorialOrder) {
+    // $('#remove').on('click', function () {
+    var $overlay = $('#overlay');
 
+    if (tutorialOrder == 1) {
+        var $selectAlgorithmButton = $('#selectAlgorithmButton');
+        console.log($selectAlgorithmButton)
+        $selectAlgorithmButton.css('z-index', 11);
+        $('#overlay-text').text("1. Select an algorithm.");
+        $overlay.data('current', $selectAlgorithmButton).show();
+    } else if (tutorialOrder == 2) {
+        var $selectSetupButton = $('#selectSetupButton');
+        console.log($selectSetupButton)
+        $selectSetupButton.css('z-index', 11);
+        $('#overlay-text').text(" 2. Select a setup. In each setup, there are 22 vehicles in two different types.");
+        $overlay.data('current', $selectSetupButton).show()
+    } else if (tutorialOrder == 3) {
+        var $btn_group2 = $('#btn_group2');
+        console.log($btn_group2)
+        $btn_group2.css('z-index', 11);
+        $('#overlay-text').text("3. Check the vehicles to plot on the graph.");
+        $overlay.data('current', $btn_group2).show()
+    }else if (tutorialOrder == 4) {
+        var $selectParameterButton = $('#selectParameterButton');
+        console.log($selectParameterButton)
+        $selectParameterButton.css('z-index', 11);
+        $('#overlay-text').text("4. Select a parameter to be plotted on the y axis.");
+        $overlay.data('current', $selectParameterButton).show()
+    } else if (tutorialOrder == 5) {
+        var $startButton = $('#startButton');
+        console.log($startButton)
+        $startButton.css('z-index', 11);
+        $('#overlay-text').text("5. Press the \"Start\" button to run the Ring and plot the graph.");
+        $overlay.data('current', $startButton).show()
+    }
+    else {
+        $overlay.hide();
+        $overlay.data('current').css('z-index', 1);
+    }
+    // ++tutorialOrder;
+    // });
 }
 
 function extractAlgorithmsAndSetups(algorithms, filename_dict, algo_setup_dict, file_strs) {
