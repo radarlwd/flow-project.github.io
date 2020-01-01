@@ -1,4 +1,4 @@
-//retrieve data and count how many vehicles for AVnomous and HVular
+//retrieve data and count how many vehicles for AV cars, HV cars, and SV cars
 function retrieveData(data) {
     var arrayx = [];
     var arrayy = [];
@@ -50,8 +50,9 @@ function retrieveData(data) {
     // console.log("x", arrayx);
     // console.log("y", arrayy);
     // console.log("ang", anglearray)
-    // console.log("posofHV", posofHV);
-    // console.log("posofAV", posofAV);
+    console.log("posofHV", posofHV);
+    console.log("posofAV", posofAV);
+    console.log("posofSV", posofSV)
     return [arrayx, arrayy, anglearray, posofHV, posofAV, posofSV];
 }
 
@@ -76,7 +77,7 @@ ctx.fillStyle = "#FFFFFF"
 ctx.stroke();
 ctx.fill();
 
-//create elements with images
+//create elements with car images
 function createelements(posofHV, posofAV, posofSV) {
     var namesofHV = [];
     var namesofAV = [];
@@ -87,7 +88,8 @@ function createelements(posofHV, posofAV, posofSV) {
         var otherobj = document.createElement("IMG");
         otherobj.id = ('HV' + (posofHV[i]));
         namesofHV.push('HV' + (posofHV[i]));
-        otherobj.setAttribute('src', 'yellow_car.png');
+        //human vehicle image
+        otherobj.setAttribute('src', 'white_car.png');
         otherobj.style.position = "absolute";
         obj.appendChild(otherobj);
         document.getElementById("car-container").appendChild(obj);
@@ -98,7 +100,8 @@ function createelements(posofHV, posofAV, posofSV) {
         var otherobj = document.createElement("IMG");
         otherobj.id = ('SV' + (posofSV[i]));
         namesofSV.push('SV' + (posofSV[i]));
-        otherobj.setAttribute('src', 'yellow_car.png');
+        //sensed vehicle image
+        otherobj.setAttribute('src', 'blue_car.png');
         otherobj.style.position = "absolute";
         obj.appendChild(otherobj);
         document.getElementById("car-container").appendChild(obj);
@@ -109,7 +112,8 @@ function createelements(posofHV, posofAV, posofSV) {
         var otherobj = document.createElement("IMG");
         otherobj.id = ('AV' + (posofAV[i]));
         namesofAV.push('AV' + (posofAV[i]))
-        otherobj.setAttribute('src', 'blue_car.png');
+        //autonomous vehicle image
+        otherobj.setAttribute('src', 'red_car1.png');
         otherobj.style.position = "absolute";
         obj.appendChild(otherobj);
         document.getElementById("car-container").appendChild(obj);
