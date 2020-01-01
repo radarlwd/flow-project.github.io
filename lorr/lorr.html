@@ -73,6 +73,7 @@
                 .images {
                     height: 100%;
                 }
+                .clearFloat { clear: both;}
             </style>
         </head>
 
@@ -99,12 +100,18 @@
                             <font size="3"> Select Algorithm </font>
                         </p>
                     </div>
-                    <div id="car-container" style="display: block;">
-                        <canvas id="myCanvas" width="600" height="600"
-                            style="border:1px; margin-top: 50px; margin-left: 10px; position: absolute;"></canvas>
-                        <canvas id="Canvas2" width="600" height="600"
-                            style="border:1px; margin-top: 50px; margin-left: 10px; position: absolute;"></canvas>
+                    <div style = "height:650px;">
+                    <div id="car-container" width="600" height="600" style="display: inline-grid;">
+                        <div id="container" positon = relative;>
+                            <canvas id="myCanvas" width="600" height="600"
+                                style="border:1px; margin-top: 50px; margin-left: 10px; position: absolute; display: block;"></canvas>
+                            <canvas id="Canvas2" width="600" height="600"
+                                style="border:1px; margin-top: 50px; margin-left: 10px; position: absolute; display: block;"></canvas>
+                        </div>
                     </div>
+                    </div>
+
+
 
                 </div>
                 <div id="col01" class="column">

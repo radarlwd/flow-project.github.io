@@ -1,4 +1,4 @@
-
+//retrieve data and count how many vehicles for AVnomous and HVular
 function retrieveData(data) {
     var arrayx = [];
     var arrayy = [];
@@ -6,24 +6,30 @@ function retrieveData(data) {
     var xtemp = [];
     var ytemp = [];
     var angles = [];
-    var posofreg = [];
-    var posofauto = [];
+    var posofHV = [];
+    var posofAV = [];
+    var posofSV = [];
     var position = 0;
     var id = '';
     var length = 0;
-    var cars = 0;
-    var autocars = 0;
+    var HVcars = 0;
+    var SVcars = 0;
+    var AVcars = 0;
     var iteration = 0;
     length = data.length;
     // console.log(data.length)
     while (position < length) { 
         id = data[position].id;
-        if (id.substr(0, 3) === 'IDM') {
-            cars++
-            posofreg.push(iteration);
+        veh_cls = data[position].veh_cls;
+        if (veh_cls.substr(0, 2) === 'HV') {
+            HVcars++
+            posofHV.push(iteration);
+        } else if (veh_cls.substr(0, 2) === 'SV') {
+            SVcars++
+            posofSV.push(iteration);
         } else {
-            autocars++
-            posofauto.push(iteration);
+            AVcars++
+            posofAV.push(iteration);
         }
       
             
@@ -44,11 +50,12 @@ function retrieveData(data) {
     // console.log("x", arrayx);
     // console.log("y", arrayy);
     // console.log("ang", anglearray)
-    // console.log("posofreg", posofreg);
-    // console.log("posofauto", posofauto);
-    return [arrayx, arrayy, anglearray, posofreg, posofauto];
+    // console.log("posofHV", posofHV);
+    // console.log("posofAV", posofAV);
+    return [arrayx, arrayy, anglearray, posofHV, posofAV, posofSV];
 }
 
+//canvas for the ring
 var c = document.getElementById("myCanvas");
 var ctx = c.getContext("2d");
 ctx.lineWidth = 5;
@@ -69,33 +76,45 @@ ctx.fillStyle = "#FFFFFF"
 ctx.stroke();
 ctx.fill();
 
-
-function createelements(posofreg, posofauto) {
-    var namesofreg = [];
-    var namesofauto = [];
-    for (i = 0; i < posofreg.length; i++) {
+//create elements with images
+function createelements(posofHV, posofAV, posofSV) {
+    var namesofHV = [];
+    var namesofAV = [];
+    var namesofSV = [];
+    for (i = 0; i < posofHV.length; i++) {
         var obj = document.createElement('div');
         obj.className = "images";
         var otherobj = document.createElement("IMG");
-        otherobj.id = ('IDM' + (posofreg[i]));
-        namesofreg.push('IDM' + (posofreg[i]));
+        otherobj.id = ('HV' + (posofHV[i]));
+        namesofHV.push('HV' + (posofHV[i]));
         otherobj.setAttribute('src', 'yellow_car.png');
-        otherobj.style.position = "relative";
+        otherobj.style.position = "absolute";
         obj.appendChild(otherobj);
         document.getElementById("car-container").appendChild(obj);
     }
-    for (i = 0; i < posofauto.length; i++) {
+    for (i = 0; i < posofSV.length; i++) {
         var obj = document.createElement('div');
         obj.className = "images";
         var otherobj = document.createElement("IMG");
-        otherobj.id = ('AUTO' + (posofauto[i]));
-        namesofauto.push('AUTO' + (posofauto[i]))
-        otherobj.setAttribute('src', 'blue_car.png');
-        otherobj.style.position = "relative";
+        otherobj.id = ('SV' + (posofSV[i]));
+        namesofSV.push('SV' + (posofSV[i]));
+        otherobj.setAttribute('src', 'yellow_car.png');
+        otherobj.style.position = "absolute";
         obj.appendChild(otherobj);
         document.getElementById("car-container").appendChild(obj);
     }
-    return [namesofreg, namesofauto];
-    // console.log(namesofreg);
-    // console.log(namesofauto);
+    for (i = 0; i < posofAV.length; i++) {
+        var obj = document.createElement('div');
+        obj.className = "images";
+        var otherobj = document.createElement("IMG");
+        otherobj.id = ('AV' + (posofAV[i]));
+        namesofAV.push('AV' + (posofAV[i]))
+        otherobj.setAttribute('src', 'blue_car.png');
+        otherobj.style.position = "absolute";
+        obj.appendChild(otherobj);
+        document.getElementById("car-container").appendChild(obj);
+    }
+    return [namesofHV, namesofAV, namesofSV];
+    // console.log(namesofHV);
+    // console.log(namesofAV);
 }
