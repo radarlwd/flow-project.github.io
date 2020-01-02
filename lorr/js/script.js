@@ -11,6 +11,8 @@ var curDataFile = "";// global var in file_list.js
 var curAlgorithm;
 var curSetup;
 
+var dontShowAgain = false;
+
 var allCheckboxVal = false;
 
 var algorithmDropdown;
@@ -104,7 +106,7 @@ function addCarCheckboxes(car_names) {
         var $checkbox = $(`<label class="checkbox-container">` + car_names[i] + `<input type="checkbox"> <span class="checkmark"></span> </label>`);
         $("#btn_group2").append($checkbox);
         $checkbox.on("change", function (d) {
-
+            updateOverlayText(4);
             var childN = document.getElementById("btn_group2").childNodes;
             for (i = 0; i < childN.length; ++i) {
                 childN[i].style.color = "#000000";
@@ -115,8 +117,8 @@ function addCarCheckboxes(car_names) {
         })
     }
     d3.select("#allCheckbox").on("change", function (d) {
+        updateOverlayText(4);
         allCheckboxVal = !this.childNodes[1].checked;
-
         var childN = document.getElementById("btn_group2").childNodes;
         for (i = 0; i < childN.length; ++i) {
             childN[i].childNodes[1].checked = this.childNodes[1].checked;
@@ -177,6 +179,7 @@ function addButtons() {
 
     // d3.select("#selectParameterButton").property("disabled", false);
     startButton = d3.select("#startButton").on("click", function (d) {
+        updateOverlayText(6);
         console.log("start!!!!");
         updatePage(curParameter, curData, getCarCheckedValues());
         updateTextCheckboxes();
@@ -233,6 +236,7 @@ function addButtons() {
     // When the button is changed, run the updateChart function
     var curr;
     d3.select("#selectAlgorithmButton").on("change", function (d) {
+        updateOverlayText(2);
         startButton.property("disabled", true);
 
         curr = d3.select(this).property("value");
@@ -272,6 +276,7 @@ function addButtons() {
     })
 
     d3.select("#selectSetupButton").on("change", function (d) {
+        updateOverlayText(3);
         var select = d3.select(this).property("value");
         var key = d3.select("#selectAlgorithmButton").property("value") + select;
         var curr = data_filename_dict[key];
@@ -305,6 +310,7 @@ function addButtons() {
 
     // When the button is changed, run the updateChart function
     d3.select("#selectParameterButton").on("change", function (d) {
+        updateOverlayText(5);
         // recover the option that has been chosen
         curParameter = d3.select(this).property("value");
 
@@ -318,7 +324,6 @@ function updatePage(selectedOption, data, selectedKeys) {
     d3.select("#vertical_time_line").remove();
     d3.select("#vertical_time_line_text").remove();
 
-    updateDropDownOptions(data);
     var dataToPlot = [];
     var curYMax = Number.NEGATIVE_INFINITY;
     var selectedData; //cars selected
@@ -504,8 +509,49 @@ function updateGraph(dataGroups, opacities) {
         .text("current time");
 }
 
-function updateDropDownOptions(data) {
+function updateOverlayText(tutorialOrder) {
+    if (dontShowAgain) {
+        return;
+    }
+    // $('#remove').on('click', function () {
+    var $overlay = $('#overlay');
 
+    if (tutorialOrder == 1) {
+        var $selectAlgorithmButton = $('#selectAlgorithmButton');
+        $selectAlgorithmButton.css('z-index', 11);
+        $('#overlay-text').text("1. Please select an algorithm.");
+        $overlay.data('current', $selectAlgorithmButton).show();
+    } else if (tutorialOrder == 2) {
+        var $selectSetupButton = $('#selectSetupButton');
+        $selectSetupButton.css('z-index', 11);
+        $('#overlay-text').text(" 2. Please select a setup. In each setup, there are 22 vehicles in two different types.");
+        $overlay.data('current', $selectSetupButton).show()
+    } else if (tutorialOrder == 3) {
+        var $btn_group2 = $('#btn_group2');
+        $btn_group2.css('z-index', 11);
+        $('#overlay-text').text("3. Please check the vehicles to plot on the graph.");
+        $overlay.data('current', $btn_group2).show()
+    } else if (tutorialOrder == 4) {
+        var $selectParameterButton = $('#selectParameterButton');
+        $selectParameterButton.css('z-index', 11);
+        $('#overlay-text').text("4. Please select a parameter to be plotted on the y axis.");
+        $overlay.data('current', $selectParameterButton).show()
+    } else if (tutorialOrder == 5) {
+        var $startButton = $('#startButton');
+        $startButton.css('z-index', 11);
+        $('#overlay-text').text("5. Please press the \"Start\" button to run the Ring and plot the graph.");
+        $overlay.data('current', $startButton).show()
+    } else if (tutorialOrder == 6) {
+        dontShowAgain = true;
+        $overlay.hide();
+        $overlay.data('current').css('z-index', 1);
+    }
+    else {
+        $overlay.hide();
+        $overlay.data('current').css('z-index', 1);
+    }
+    // ++tutorialOrder;
+    // });
 }
 
 function extractAlgorithmsAndSetups(algorithms, filename_dict, algo_setup_dict, file_strs) {
@@ -517,18 +563,21 @@ function extractAlgorithmsAndSetups(algorithms, filename_dict, algo_setup_dict, 
         var myRegex = /(.*)(--)(.*)(.csv)/g;
 
         var filename = file_strs[i];
-        var filename = filename.replace(/^.*[\\\/]/, '')
+
+        var filename = filename.replace(/^.*[\\\/]/, ''); //replace string "abc/" with empty to extract the filename
+        var ALGO_INDEX = 1;
+        var SETUP_INDEX = 3;
         var match = myRegex.exec(filename);
-        algos.push(match[1]);
-        var algo_str = match[1];
+        algos.push(match[ALGO_INDEX]);
+        var algo_str = match[ALGO_INDEX];
 
         if (algo_setup_dict[algo_str] === undefined) {
             algo_setup_dict[algo_str] = [];
         }
 
-        algo_setup_dict[algo_str].push(match[3]);
+        algo_setup_dict[algo_str].push(match[SETUP_INDEX]);
 
-        var key = match[1] + match[3];
+        var key = match[1] + match[SETUP_INDEX];
         filename_dict[key] = file_strs[i];
     }
 
@@ -614,13 +663,36 @@ function loadMetricsFile(filename) {
 
 }
 
+function functionConfirm(msg, myYes, myNo) {
+
+    var confirmBox = $("#confirm");
+    confirmBox.find(".message").text(msg);
+    confirmBox.find(".yes,.no").unbind().click(function () {
+        confirmBox.hide();
+    });
+    confirmBox.find(".yes").click(myYes);
+    confirmBox.find(".no").click(myNo);
+    confirmBox.show();
+}
+
+function tutorialConfirm() {
+    functionConfirm("Hi! Would you like a quick tour?", function yes() {
+        updateOverlayText(1);
+    },
+        function no() {
+            dontShowAgain = true;
+            var $overlay = $('#overlay');
+            $overlay.hide();
+        });
+}
+
 var id;
 var created = false;
 var namesofHV;
 var namesofAV;
 var namesofSV;
 function startRing(data) {
-    d3.selectAll(".images").remove();
+    d3.selectAll(".moving-car-img").remove();
     clearInterval(id);
     var datalist = retrieveData(data);
     //make arrays of points x, y, angles, positions

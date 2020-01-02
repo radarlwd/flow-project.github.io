@@ -42,83 +42,88 @@
     <main>
         <script src="/assets/js/header.js"></script>
 
-        <head>
-            <style>
-                * {
-                    box-sizing: border-box;
-                }
+        <style>
+            * {
+                box-sizing: border-box;
+            }
 
-                /* Create two equal columns that floats next to each other */
-                .column {
-                    float: left;
-                    width: 50%;
-                    padding: 10px;
-                    height: 100%;
-                    /* Should be removed. Only for demonstration */
-                }
+            /* Create two equal columns that floats next to each other */
+            .column {
+                float: left;
+                width: 50%;
+                padding: 10px;
+                height: 100%;
+                /* Should be removed. Only for demonstration */
+            }
 
-                /* Clear floats after the columns */
-                .row:after {
-                    content: "";
-                    display: table;
-                    clear: both;
-                }
+            /* Clear floats after the columns */
+            .row:after {
+                content: "";
+                display: table;
+                clear: both;
+            }
 
-                img {
-                    /* border-radius: 100%; */
-                    width: 20px;
-                    height: 40px;
-                }
 
-                .images {
-                    height: 100%;
-                }
-                .clearFloat { clear: both;}
-            </style>
-        </head>
+            /* .clearFloat {
+                clear: both;
+            } */
+        </style>
 
-        <body>
 
-            <h2>
+        <div id="outer">
+            <div id="confirm" class="box">
+                <div class="message"></div>
+                <button class="yes">Yes</button>
+                <button class="no">No</button>
+            </div>
+            <!-- <h2>
                 <center> Model Performance </center>
-            </h2>
+            </h2> -->
 
             <div id="row0" class="row">
                 <div id="col00" class="column">
-                    <div class="ring-legends" style="left: 10;">
-                        <div width="600" height="600">
-                        <img src="white_car.png" hspace="20" align="left">
-                        <p>
-                            <font size="3"> IDM: Intelligent Driver Model <br>
-                                The IDM is a continuous-time car-following model for the simulation of freeway and urban
-                                traffic
-                                proposed by M. Treiber and A. Kesting. It describes the dynamics of the positions and
-                                velocities of
-                                single vehicles. </font>
-                        </p>
+                    <div class="ring-legends">
+                        <div style="min-height: 60px;">
+                            <img class="car-img" src="white_car.png" hspace="20" align="left">
+                            <p style="margin-left: 60px">
+                                <font size="3"> IDM: Intelligent Driver Model <br>
+                                    The IDM is a continuous-time car-following model for the simulation of freeway
+                                    and urban
+                                    traffic
+                                    proposed by M. Treiber and A. Kesting. It describes the dynamics of the
+                                    positions and
+                                    velocities of
+                                    single vehicles. </font>
+                                </pstyle="margin-left: 60px">
                         </div>
-                        <div width="600" height="600">
-                        <img src="blue_car.png" hspace="20" align="left">
-                        <p style="margin-left: 60px">
-                            <font size="3"> Sensed Vehicle - Cars influenced my autonomous vehicle </font>
-                        </p>
-                    </div>
-                    <div width="600" height="600">
-                        <img src="red_car.png" hspace="20" align="left">
-                        <p id="paragraph" style="margin-left: 60px">
-                            <font size="3"> Select Algorithm </font>
-                        </p>
-                    </div>
-                    </div>
-                    <div style = "height:650px;">
-                    <div id="car-container" width="600" height="600" style="display: inline-grid;">
-                        <div id="container" positon = relative;>
-                            <canvas id="myCanvas" width="600" height="600"
-                                style="border:1px; margin-top: 50px; margin-left: 10px; position: absolute; display: block;"></canvas>
-                            <canvas id="Canvas2" width="600" height="600"
-                                style="border:1px; margin-top: 50px; margin-left: 10px; position: absolute; display: block;"></canvas>
+
+                        <div style="min-height: 60px;">
+                            <img class="car-img" src="blue_car.png" hspace="20" align="left">
+                            <hr style="border-top: dotted 1px;" />
+                            <p style="margin-left: 60px">
+                                <font size="3"> Sensed Vehicle - Cars influenced my autonomous vehicle </font>
+                            </p>
                         </div>
+
+                        <div style="min-height: 60px;">
+                            <img class="car-img" src="red_car.png" hspace="20" align="left">
+                            <hr style="border-top: dotted 1px;" />
+                            <p id="paragraph" style="margin-left: 60px">
+                                <font size="3"> Select Algorithm </font>
+                            </p>
+                        </div>
+
                     </div>
+
+                    <div style="height:650px;">
+                        <div id="car-container" width="600" height="600" style="display: inline-grid;">
+                            <div id="container" positon=relative;>
+                                <canvas id="outerCircle" width="600" height="600"
+                                    style="border:1px; margin-top: 50px; margin-left: 10px; position: absolute; display: block;"></canvas>
+                                <canvas id="innerCircle" width="600" height="600"
+                                    style="border:1px; margin-top: 50px; margin-left: 10px; position: absolute; display: block;"></canvas>
+                            </div>
+                        </div>
                     </div>
 
 
@@ -127,54 +132,57 @@
                 <div id="col01" class="column">
                     <div id="lineGraph"></div>
                     <div id=btn_group1 class="btn-group" style="margin-top: 20px; margin-left: 10px;">
-                        <select id="selectAlgorithmButton" class="dropbtn" title="Select a algorithm"></select>
-                        <select id="selectSetupButton" class="dropbtn" title="Select a setup"></select>
-                        <select id="selectParameterButton" class="dropbtn" title="Select a parameter"></select>
-                        <button id="startButton" type="button" class="btn"
+                        <select id="selectAlgorithmButton" class="dropbtn box" title="Select a algorithm"></select>
+                        <select id="selectSetupButton" class="dropbtn box" title="Select a setup"></select>
+                        <select id="selectParameterButton" class="dropbtn box" title="Select a parameter"></select>
+                        <button id="startButton" type="button" class="btn box"
                             title="Start plotting and running the ring">Start</button>
-
-                        <div class="popup" onclick="myFunction()" style="font-size:18px; background-color:yellowgreen;">
-                            Click here for help
-                            <span class="popuptext" id="myPopup" style="width:300px;">1. Select a algorithm. 2. Select a
-                                Setup(different types of
-                                vehicles) 3. Check the vehicles below to plot on the graph. 4. Select a parameter to
-                                plot the graph. 5.
-                                Press "Start" button to run the Ring and plot the graph. Click me again to hide the help
-                                message.</span>
-                        </div>
                     </div>
                     <p>
                         <font size="3">Check the vehicles below to plot the line graph</font>
                     </p>
-                    <div id=btn_group2 style="margin-top: 20px; margin-left: 10px;">
+                    <div id=btn_group2 style="margin-top: 20px; margin-left: 10px; position: relative;">
                     </div>
                     <p>
                         <font size="3">Metrics of the Selected Algorithm</font>
                     </p>
-                    <div id=table1>
-                    </div>
-
-
-
-
+                    <div id=table1></div>
 
                 </div>
             </div>
+        </div>
 
-        </body>
-        <script>
-            // When the user clicks on div, open the popup
-            function myFunction() {
-                var popup = document.getElementById("myPopup");
-                popup.classList.toggle("show");
-            }
-        </script>
+
         <script src="http://d3js.org/d3.v4.min.js"></script>
         <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.1.min.js"></script>
         <script src="js/file_list.js"></script>
         <script src="js/ring.js"></script>
         <script src="js/script.js"></script>
 
+        <script>
+            $(function () {
+                var $outer = $('#outer'),
+                    $overlay = $('<div>', {
+                        css: {
+                            position: 'absolute',
+                            width: '100%',
+                            height: '90%',
+                            top: $outer.position().top,
+                            left: $outer.position().left,
+                            backgroundColor: 'rgba(0,0,0,0.7)',
+                            zIndex: 10,
+                            display: 'none'
+                        }
+                    }).appendTo($outer);
+                $overlay.attr('id', 'overlay');
+                $explainedText = $('<div id="overlay-text" style="z-index: 11"> this is text</div>').appendTo($overlay);
+                var $confirmBox = $("#confirm");
+                $confirmBox.css('z-index', 11);
+                $('#overlay-text').text("Welcome!");
+                $overlay.data('current', $confirmBox).show();
+            });
+            tutorialConfirm();    
+        </script>
 
 
 

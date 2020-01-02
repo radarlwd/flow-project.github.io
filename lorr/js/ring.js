@@ -57,7 +57,7 @@ function retrieveData(data) {
 }
 
 //canvas for the ring
-var c = document.getElementById("myCanvas");
+var c = document.getElementById("outerCircle");
 var ctx = c.getContext("2d");
 ctx.lineWidth = 5;
 ctx.beginPath();
@@ -67,7 +67,7 @@ ctx.fillStyle = "#808080"
 ctx.stroke();
 ctx.fill();
 
-var c = document.getElementById("Canvas2");
+var c = document.getElementById("innerCircle");
 var ctx = c.getContext("2d");
 ctx.lineWidth = 5;
 ctx.beginPath();
@@ -83,40 +83,35 @@ function createelements(posofHV, posofAV, posofSV) {
     var namesofAV = [];
     var namesofSV = [];
     for (i = 0; i < posofHV.length; i++) {
-        var obj = document.createElement('div');
-        obj.className = "images";
         var otherobj = document.createElement("IMG");
         otherobj.id = ('HV' + (posofHV[i]));
+        otherobj.className = "car-img moving-car-img";// two classes
         namesofHV.push('HV' + (posofHV[i]));
         //human vehicle image
         otherobj.setAttribute('src', 'white_car.png');
         otherobj.style.position = "absolute";
-        obj.appendChild(otherobj);
-        document.getElementById("car-container").appendChild(obj);
+        document.getElementById("car-container").appendChild(otherobj);
+
     }
     for (i = 0; i < posofSV.length; i++) {
-        var obj = document.createElement('div');
-        obj.className = "images";
         var otherobj = document.createElement("IMG");
         otherobj.id = ('SV' + (posofSV[i]));
+        otherobj.className = "car-img moving-car-img";
         namesofSV.push('SV' + (posofSV[i]));
         //sensed vehicle image
         otherobj.setAttribute('src', 'blue_car.png');
         otherobj.style.position = "absolute";
-        obj.appendChild(otherobj);
-        document.getElementById("car-container").appendChild(obj);
+        document.getElementById("car-container").appendChild(otherobj);
     }
     for (i = 0; i < posofAV.length; i++) {
-        var obj = document.createElement('div');
-        obj.className = "images";
         var otherobj = document.createElement("IMG");
         otherobj.id = ('AV' + (posofAV[i]));
+        otherobj.className = "car-img moving-car-img";
         namesofAV.push('AV' + (posofAV[i]))
         //autonomous vehicle image
         otherobj.setAttribute('src', 'red_car.png');
         otherobj.style.position = "absolute";
-        obj.appendChild(otherobj);
-        document.getElementById("car-container").appendChild(obj);
+        document.getElementById("car-container").appendChild(otherobj);
     }
     return [namesofHV, namesofAV, namesofSV];
     // console.log(namesofHV);

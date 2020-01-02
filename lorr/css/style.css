@@ -22,12 +22,14 @@ path {
 }
 
 /**********************8 button group *************************/
-#startButton:disabled{
+
+#startButton:disabled {
   background-color: #d2dad2;
 }
 
 /* Style The Dropdown Button */
-.dropbtn ,.btn{
+
+.dropbtn, .btn {
   background-color: #4CAF50;
   color: white;
   padding: 16px;
@@ -37,14 +39,18 @@ path {
 }
 
 /* The container <div> - needed to position the dropdown content */
-.btn-group{
+
+.btn-group {
   position: relative;
   display: inline-block;
 }
 
-
+.dropbtn {
+  position: relative;
+}
 
 /* Change the background color of the dropdown button when the dropdown content is shown */
+
 .btn-group select:hover, button:hover {
   background-color: #3e8e41;
 }
@@ -135,7 +141,7 @@ path {
 #metrics_table {
   font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
   border-collapse: collapse;
-  width: 100%;
+  width: 90%;
 }
 
 #metrics_table td, #metrics_table th {
@@ -159,9 +165,10 @@ path {
   color: white;
 }
 
-
 /*****************************pop up**********************************/
+
 /* Popup container - can be anything you want */
+
 .popup {
   position: relative;
   display: inline-block;
@@ -173,6 +180,7 @@ path {
 }
 
 /* The actual popup */
+
 .popup .popuptext {
   visibility: hidden;
   width: 160px;
@@ -189,6 +197,7 @@ path {
 }
 
 /* Popup arrow */
+
 .popup .popuptext::after {
   content: "";
   position: absolute;
@@ -201,6 +210,7 @@ path {
 }
 
 /* Toggle this class - hide and show the popup */
+
 .popup .show {
   visibility: visible;
   -webkit-animation: fadeIn 1s;
@@ -208,12 +218,83 @@ path {
 }
 
 /* Add animation (fade in the popup) */
+
 @-webkit-keyframes fadeIn {
-  from {opacity: 0;} 
-  to {opacity: 1;}
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes fadeIn {
-  from {opacity: 0;}
-  to {opacity:1 ;}
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/*overlay text*/
+
+.box {
+  /* width: 80px; */
+  /* height: 120px; */
+  /* border: 1px solid gray; */
+  /* background-color: rgba(100,0,0,0.9); */
+  /* position: relative; */
+  display: inline-block;
+  /* margin-right: 5px; */
+}
+
+#overlay-text {
+  position: absolute;
+  top: 25%;
+  left: 50%;
+  font-size: 30px;
+  color: white;
+  transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+}
+
+#remove {
+  top: 200px;
+  position: relative;
+}
+
+/***************confirm box*********************/
+
+#confirm {
+  display: none;
+  background-color: rgb(255, 255, 255);
+  border: 1px solid #aaa;
+  position: fixed;
+  width: 300px;
+  left: 50%;
+  margin-left: -100px;
+  padding: 6px 8px 8px;
+  box-sizing: border-box;
+  text-align: center;
+  top: 50%;
+  left: 50%;
+}
+
+#confirm button {
+  background-color: rgb(58, 65, 65);
+  display: inline-block;
+  border-radius: 5px;
+  border: 1px solid #aaa;
+  padding: 5px;
+  text-align: center;
+  width: 80px;
+  cursor: pointer;
+  font-size: large;
+  color: #fff;
+}
+
+#confirm .message {
+  text-align: center;
+  font-size: large;
 }
