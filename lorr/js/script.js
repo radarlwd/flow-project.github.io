@@ -10,6 +10,7 @@ var curData = "";
 var curDataFile = "";// global var in file_list.js
 var curAlgorithm;
 var curSetup;
+var dontShowAgain = false;
 
 var allCheckboxVal = false;
 
@@ -316,8 +317,6 @@ function addButtons() {
 
         startButton.property("disabled", false);
     })
-
-    updateOverlayText(1);
 }
 
 function updatePage(selectedOption, data, selectedKeys) {
@@ -517,33 +516,28 @@ function updateOverlayText(tutorialOrder) {
 
     if (tutorialOrder == 1) {
         var $selectAlgorithmButton = $('#selectAlgorithmButton');
-        console.log($selectAlgorithmButton)
         $selectAlgorithmButton.css('z-index', 11);
-        $('#overlay-text').text("1. Select an algorithm.");
+        $('#overlay-text').text("1. Please select an algorithm.");
         $overlay.data('current', $selectAlgorithmButton).show();
     } else if (tutorialOrder == 2) {
         var $selectSetupButton = $('#selectSetupButton');
-        console.log($selectSetupButton)
         $selectSetupButton.css('z-index', 11);
-        $('#overlay-text').text(" 2. Select a setup. In each setup, there are 22 vehicles in two different types.");
+        $('#overlay-text').text(" 2. Please select a setup. In each setup, there are 22 vehicles in two different types.");
         $overlay.data('current', $selectSetupButton).show()
     } else if (tutorialOrder == 3) {
         var $btn_group2 = $('#btn_group2');
-        console.log($btn_group2)
         $btn_group2.css('z-index', 11);
-        $('#overlay-text').text("3. Check the vehicles to plot on the graph.");
+        $('#overlay-text').text("3. Please check the vehicles to plot on the graph.");
         $overlay.data('current', $btn_group2).show()
-    }else if (tutorialOrder == 4) {
+    } else if (tutorialOrder == 4) {
         var $selectParameterButton = $('#selectParameterButton');
-        console.log($selectParameterButton)
         $selectParameterButton.css('z-index', 11);
-        $('#overlay-text').text("4. Select a parameter to be plotted on the y axis.");
+        $('#overlay-text').text("4. Please select a parameter to be plotted on the y axis.");
         $overlay.data('current', $selectParameterButton).show()
     } else if (tutorialOrder == 5) {
         var $startButton = $('#startButton');
-        console.log($startButton)
         $startButton.css('z-index', 11);
-        $('#overlay-text').text("5. Press the \"Start\" button to run the Ring and plot the graph.");
+        $('#overlay-text').text("5. Please press the \"Start\" button to run the Ring and plot the graph.");
         $overlay.data('current', $startButton).show()
     }
     else {
@@ -563,18 +557,21 @@ function extractAlgorithmsAndSetups(algorithms, filename_dict, algo_setup_dict, 
         var myRegex = /(.*)(--)(.*)(.csv)/g;
 
         var filename = file_strs[i];
-        var filename = filename.replace(/^.*[\\\/]/, '')
+
+        var filename = filename.replace(/^.*[\\\/]/, ''); //replace string "abc/" with empty to extract the filename
+        var ALGO_INDEX = 1;
+        var SETUP_INDEX = 3;
         var match = myRegex.exec(filename);
-        algos.push(match[1]);
-        var algo_str = match[1];
+        algos.push(match[ALGO_INDEX]);
+        var algo_str = match[ALGO_INDEX];
 
         if (algo_setup_dict[algo_str] === undefined) {
             algo_setup_dict[algo_str] = [];
         }
 
-        algo_setup_dict[algo_str].push(match[3]);
+        algo_setup_dict[algo_str].push(match[SETUP_INDEX]);
 
-        var key = match[1] + match[3];
+        var key = match[1] + match[SETUP_INDEX];
         filename_dict[key] = file_strs[i];
     }
 
@@ -660,12 +657,24 @@ function loadMetricsFile(filename) {
 
 }
 
+function functionConfirm(msg, myYes, myNo) {
+
+    var confirmBox = $("#confirm");
+    confirmBox.find(".message").text(msg);
+    confirmBox.find(".yes,.no").unbind().click(function () {
+        confirmBox.hide();
+    });
+    confirmBox.find(".yes").click(myYes);
+    confirmBox.find(".no").click(myNo);
+    confirmBox.show();
+}
+
 var id;
 var created = false;
 var namesofreg;
 var namesofauto;
 function startRing(data) {
-    d3.selectAll(".images").remove();
+    d3.selectAll(".dynamic-car-img").remove();
     // console.log("cars cleared")
     clearInterval(id);
     // console.log("interval cleared")

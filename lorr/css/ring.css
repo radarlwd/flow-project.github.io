@@ -4,3 +4,13 @@
     height: 600px;
 } */
 
+.car-img {
+    width: 20px;
+    height: 40px;
+}
+
+
+
+.dynamic-car-img {
+    height: 100%;
+}

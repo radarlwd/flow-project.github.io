@@ -75,7 +75,7 @@ function createelements(posofreg, posofauto) {
     var namesofauto = [];
     for (i = 0; i < posofreg.length; i++) {
         var obj = document.createElement('div');
-        obj.className = "images";
+        obj.className = "dynamic-car-img car-img";
         var otherobj = document.createElement("IMG");
         otherobj.id = ('IDM' + (posofreg[i]));
         namesofreg.push('IDM' + (posofreg[i]));
@@ -86,7 +86,7 @@ function createelements(posofreg, posofauto) {
     }
     for (i = 0; i < posofauto.length; i++) {
         var obj = document.createElement('div');
-        obj.className = "images";
+        obj.className = "dynamic-car-img car-img";
         var otherobj = document.createElement("IMG");
         otherobj.id = ('AUTO' + (posofauto[i]));
         namesofauto.push('AUTO' + (posofauto[i]))
