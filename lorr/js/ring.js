@@ -113,7 +113,7 @@ function createelements(posofHV, posofAV, posofSV) {
         otherobj.id = ('AV' + (posofAV[i]));
         namesofAV.push('AV' + (posofAV[i]))
         //autonomous vehicle image
-        otherobj.setAttribute('src', 'red_car1.png');
+        otherobj.setAttribute('src', 'red_car.png');
         otherobj.style.position = "absolute";
         obj.appendChild(otherobj);
         document.getElementById("car-container").appendChild(obj);
