@@ -265,7 +265,7 @@ function addButtons() {
         $("#checkbox_title").hide();
         $("#table_title").hide();
         d3.select("#metrics_table").remove();
-
+        var btn_run = $("#btn_run");
         btn_run.prop("disabled", true);
         $('#select_setup').prop("disabled", false);
 
@@ -365,12 +365,15 @@ function addButtons() {
         if (btn_run.text() == "Run") {
             updateOverlayText(7);
             btn_run.text("Pause");
+            btn_run.prop("title", "Pause.");
         } else if (btn_run.text() == "Pause") {
-            btn_run.text("Resume");
             updateOverlayText(8);
+            btn_run.text("Resume");
+            btn_run.prop("title", "Resume.");
         } else {
             updateOverlayText(9);
             btn_run.text("Pause");
+            btn_run.prop("title", "Pause.");
         }
 
         // update the page cotent based on the selection when it starts running next animation
@@ -391,6 +394,7 @@ function addButtons() {
         updateOverlayText(10);
 
         if (!isPaused) { //if it's running, switch to pause state
+        btn_run.prop("title", "Start animation.");
             btn_run.toggleClass("pause");
             isPaused = true;
         }
@@ -607,7 +611,7 @@ function updateOverlayText(tutorialOrder) {
         6: ['#btn_run', "6. Please click the \"Run\" button to run the animation."],
         7: ['#btn_run', "7. You can click the \"Pause\" button to stop running the animation."],
         8: ['#btn_run', "8. You can also click the \"Resume\" to resume the animatoin."],
-        9: ['#btn_clear', "9. Before running a new animatoin., click the \"Clear\" button to clear the animation and the current selection."]
+        9: ['#btn_clear', "9. Before running next animatoin, click the \"Clear\" button to clear the current animation and the current selection."]
     }
     // if (tutorialOrder == 1) {
     //     var $select_algorithm = $('#select_algorithm');
@@ -812,7 +816,6 @@ function functionConfirm(msg, myYes, myNo) {
 function tutorialConfirm() {
     functionConfirm("Hi! Would you like a quick tour?", function yes() {
         updateOverlayText(1);
-        $("#btn_close").show();
     },
         function no() {
             dontShowAgain = true;
@@ -862,6 +865,7 @@ function startRing(data) {
 
             isInitialRun = false;
             $("#btn_run").text("Done");
+            $("#btn_run").prop("title", "Done! Click the \"Clear\" button before next run.");
             $("#btn_run").prop("disabled", true);
         } else {
             if (!isPaused) {
