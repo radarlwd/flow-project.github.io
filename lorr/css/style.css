@@ -1,5 +1,7 @@
+/* #b78727 */
+
 body {
-  font: 12px sans-serif;
+  font: 16px sans-serif;
 }
 
 path {
@@ -23,19 +25,20 @@ path {
 
 /**********************8 button group *************************/
 
-#startButton:disabled {
-  background-color: #d2dad2;
-}
-
 /* Style The Dropdown Button */
 
-.dropbtn, .btn {
-  background-color: #4CAF50;
+.dropdown {
+  background-color: #003262;
+  position: relative;
+}
+
+.dropdown, .btn {
   color: white;
-  padding: 16px;
+  padding: 5px;
   font-size: 16px;
   border: none;
   cursor: pointer;
+  margin: 4px 2px;
 }
 
 /* The container <div> - needed to position the dropdown content */
@@ -45,17 +48,17 @@ path {
   display: inline-block;
 }
 
-.dropbtn {
-  position: relative;
-}
-
 /* Change the background color of the dropdown button when the dropdown content is shown */
 
-.btn-group select:hover, button:hover {
-  background-color: #3e8e41;
+.btn-group select:hover:enabled, button:hover:enabled {
+  background-color: #C4820E;
 }
 
-/* RING */
+.dropdown:disabled {
+  background-color: #d2dad2;
+  cursor: not-allowed;
+  color: black;
+}
 
 /* ***************************checkbox ************************* */
 
@@ -64,6 +67,7 @@ path {
 .checkbox-container {
   display: inline-block;
   /* display: block; */
+  width: 160px;
   position: relative;
   padding-left: 35px;
   margin-bottom: 12px;
@@ -104,8 +108,13 @@ path {
 
 /* When the checkbox is checked, add a blue background */
 
-.checkbox-container input:checked~.checkmark {
+.checkbox-container input:checked:enabled~.checkmark {
   background-color: #2196F3;
+}
+
+.checkbox-container input:disabled~.checkmark {
+  background-color: #d2dad2;
+  cursor: not-allowed;
 }
 
 /* Create the checkmark/indicator (hidden when not checked) */
@@ -158,86 +167,15 @@ path {
 }
 
 #metrics_table th {
+  font-size: 16px;
   padding-top: 12px;
   padding-bottom: 12px;
   text-align: left;
-  background-color: #4CAF50;
+  background-color: #003262;
   color: white;
 }
 
-/*****************************pop up**********************************/
-
-/* Popup container - can be anything you want */
-
-.popup {
-  position: relative;
-  display: inline-block;
-  cursor: pointer;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
-
-/* The actual popup */
-
-.popup .popuptext {
-  visibility: hidden;
-  width: 160px;
-  background-color: #555;
-  color: #fff;
-  text-align: center;
-  border-radius: 6px;
-  padding: 8px 0;
-  position: absolute;
-  z-index: 1;
-  bottom: 125%;
-  left: 50%;
-  margin-left: -80px;
-}
-
-/* Popup arrow */
-
-.popup .popuptext::after {
-  content: "";
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  margin-left: -5px;
-  border-width: 5px;
-  border-style: solid;
-  border-color: #555 transparent transparent transparent;
-}
-
-/* Toggle this class - hide and show the popup */
-
-.popup .show {
-  visibility: visible;
-  -webkit-animation: fadeIn 1s;
-  animation: fadeIn 1s;
-}
-
-/* Add animation (fade in the popup) */
-
-@-webkit-keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-/*overlay text*/
+/***************************overlay text**********************************/
 
 .box {
   /* width: 80px; */
@@ -259,9 +197,18 @@ path {
   -ms-transform: translate(-50%, -50%);
 }
 
-#remove {
+/* #remove {
   top: 200px;
   position: relative;
+} */
+
+/*** close button ******/
+/* Position the close button (top right corner) */
+#overlay .closebtn {
+  position: absolute;
+  top: 20px;
+  right: 45px;
+  font-size: 60px;
 }
 
 /***************confirm box*********************/
@@ -297,4 +244,150 @@ path {
 #confirm .message {
   text-align: center;
   font-size: large;
+}
+
+/************* play/pause button ******************/
+
+#btn_run {
+  background-color: #00A598;
+  border: none;
+  color: white;
+  padding: 10px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  /* margin: 4px 2px; */
+  border-radius: 90%;
+}
+
+#btn_run:disabled #btn_clear:disabled {
+  background-color: #d2dad2;
+}
+
+#btn_run:hover:enabled, #btn_clear:hover:enabled {
+  background-color: #C4820E;
+}
+
+/* #btn_run:before {
+  content: 'play';
+} */
+
+#btn_run.pause {
+  background-color: rgb(255, 166, 0);
+}
+
+/* #btn_run.pause:before {
+  content: "pause";
+} */
+
+#btn_run.continue {
+  background-color: #00A598;
+}
+
+/* #btn_run.continue:before{
+  content: "continue";
+} */
+
+#btn_clear {
+  background-color: #ED4E33;
+  border: none;
+  color: white;
+  padding: 10px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  /* margin: 4px 2px; */
+  border-radius: 90%;
+}
+
+/* ******************* inline help tips ***************************/
+.help-tip {
+  position: absolute;
+  /* top: 18px;
+  right: 18px; */
+  text-align: center;
+  background-color: #BCDBEA;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  font-size: 14px;
+  line-height: 26px;
+  cursor: default;
+  display: inline-block;
+  z-index: 999;
+}
+
+.help-tip:before {
+  content: '?';
+  font-weight: bold;
+  color: #fff;
+}
+
+.help-tip:hover p {
+  display: block;
+  transform-origin: 100% 0%;
+  -webkit-animation: fadeIn 0.3s ease-in-out;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.help-tip p {
+  /* The tooltip */
+  display: none;
+  text-align: left;
+  background-color: #1E2021;
+  padding: 20px;
+  width: 300px;
+  position: absolute;
+  border-radius: 3px;
+  box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
+  right: -4px;
+  color: #FFF;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.help-tip p:before {
+  /* The pointer of the tooltip */
+  position: absolute;
+  content: '';
+  width: 0;
+  height: 0;
+  border: 6px solid transparent;
+  border-bottom-color: #1E2021;
+  right: 10px;
+  top: -12px;
+}
+
+.help-tip p:after {
+  /* Prevents the tooltip from being hidden */
+  width: 100%;
+  height: 40px;
+  content: '';
+  position: absolute;
+  top: -40px;
+  left: 0;
+}
+
+/* CSS animation */
+
+@-webkit-keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  100% {
+    opacity: 100%;
+    transform: scale(1);
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 100%;
+  }
 }

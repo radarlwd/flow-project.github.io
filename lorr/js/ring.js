@@ -50,9 +50,9 @@ function retrieveData(data) {
     // console.log("x", arrayx);
     // console.log("y", arrayy);
     // console.log("ang", anglearray)
-    console.log("posofHV", posofHV);
-    console.log("posofAV", posofAV);
-    console.log("posofSV", posofSV)
+    // console.log("posofHV", posofHV);
+    // console.log("posofAV", posofAV);
+    // console.log("posofSV", posofSV);
     return [arrayx, arrayy, anglearray, posofHV, posofAV, posofSV];
 }
 
