@@ -609,8 +609,8 @@ function updateOverlayText(tutorialOrder) {
         4: ['#select_parameter', "4. Please select a parameter as a variable to be plotted in y-axis. Time(in seconds) is used in x-axis by default."],
         5: ['#select_speed', "5. Please select an animation speed. This determines how fast the vehicles get updated in animation."],
         6: ['#btn_run', "6. Please click the \"Run\" button to run the animation."],
-        7: ['#btn_run', "7. You can click the \"Pause\" button to stop running the animation."],
-        8: ['#btn_run', "8. You can also click the \"Resume\" to resume the animatoin."],
+        7: ['#btn_run', "7. Click the \"Pause\" button to stop running the animation."],
+        8: ['#btn_run', "8. Click the \"Resume\" button to resume the animatoin."],
         9: ['#btn_clear', "9. Before running next animatoin, click the \"Clear\" button to clear the current animation and the current selection."]
     }
     // if (tutorialOrder == 1) {
