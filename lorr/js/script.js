@@ -786,7 +786,7 @@ function loadMetricsFile(filename) {
 
         return table;
     }
-    console.log("loading metrics " + filename);
+    // console.log("loading metrics " + filename);
     if (filename != null) {
         $("#table_title").show();
     } else {
