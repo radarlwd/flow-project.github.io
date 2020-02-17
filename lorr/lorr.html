@@ -137,11 +137,14 @@
                     <div id=btn_group1 class="btn-group" style="margin-top: 20px; margin-left: 10px;">
                         <select id="select_algorithm" class="dropdown box" title="Select an algorithm."></select>
                         <select id="select_setup" class="dropdown box" title="Select a setup."></select>
+                        <select id="select_distribution" class="dropdown box" title="Select a distribution."></select>
                         <select id="select_parameter" class="dropdown box" title="Select a parameter."></select>
                         <select id="select_speed" class="dropdown box" title="Select an animation speed."></select>
-                        <button id="btn_run" class="btn box" type="button"
-                            title="Start animation.">Run</button>
-                        <button id="btn_clear" class="btn box" type="button" title="Clear selection and animation.">Clear</button>
+
+                        
+                        <button id="btn_run" class="btn box" type="button" title="Start animation.">Run</button>
+                        <button id="btn_clear" class="btn box" type="button"
+                            title="Clear selection and animation.">Clear</button>
 
                     </div>
                     <div id="checkbox_title" style="text-align: center;  font-weight: bold; display: none">
@@ -165,38 +168,14 @@
         </div>
 
 
-        <!-- <!-- <script src="http://d3js.org/d3.v4.min.js"></script> --> -->
+        <!-- <script src="http://d3js.org/d3.v4.min.js"></script> -->
         <script src="js/module/d3.v4.min.js"></script>
         <!-- <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.1.min.js"></script> -->
         <script src="js/module/jquery-3.4.1.min.js"></script>
         <script src="js/file_list.js"></script>
         <script src="js/ring.js"></script>
+        <script src="js/tutorial.js"></script>
         <script src="js/script.js"></script>
-
-        <script>
-            $(function () {
-                var $outer = $('#outer'),
-                    $overlay = $('<div>', {
-                        css: {
-                            position: 'absolute',
-                            width: '100%',
-                            height: '90%',
-                            top: $outer.position().top,
-                            left: $outer.position().left,
-                            backgroundColor: 'rgba(0,0,0,0.7)',
-                            zIndex: 10,
-                            display: 'none'
-                        }
-                    }).appendTo($outer);
-                $overlay.attr('id', 'overlay');
-                $explainedText = $('<div id="overlay-text" style="z-index: 11"> this is text</div>').appendTo($overlay);
-                var $confirmBox = $("#confirm");
-                $confirmBox.css('z-index', 11);
-                $('#overlay-text').text("Welcome!");
-                $overlay.data('current', $confirmBox).show();
-            });
-            tutorialConfirm();    
-        </script>
 
         <script src="/assets/js/footer.js"></script>
     </main>

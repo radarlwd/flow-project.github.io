@@ -112,7 +112,7 @@ function addCarCheckboxes(car_names) {
         $("#btn_group2").append($checkbox);
 
         $checkbox.on("change", function (d) {
-            updateOverlayText(4);
+            updateOverlayText('selectParameter');
             var childN = document.getElementById("btn_group2").childNodes;
             for (i = 0; i < childN.length; ++i) {
                 childN[i].style.color = "#000000";//set inital color of checkbox to black
@@ -126,7 +126,7 @@ function addCarCheckboxes(car_names) {
 
     // a checkbox to select all vehicle
     d3.select("#checkbox_select_all").on("change", function (d) {
-        updateOverlayText(4);
+        updateOverlayText('selectParameter');
         var childN = document.getElementById("btn_group2").childNodes;
         for (i = 0; i < childN.length; ++i) {
             // select or deselect all other checkboxes based on this checkbox's value
@@ -260,7 +260,7 @@ function addButtons() {
     // ******************* Define functions for each dropdown menu **************************
 
     d3.select("#select_algorithm").on("change", function (d) {
-        updateOverlayText(2);
+        updateOverlayText('selectSetup');
 
         $("#checkbox_title").hide();
         $("#table_title").hide();
@@ -308,7 +308,7 @@ function addButtons() {
     })
 
     d3.select("#select_setup").on("change", function (d) {
-        updateOverlayText(3);
+        updateOverlayText('checkVehicleID');
 
         curSetup = d3.select(this).property("value");
         var key = d3.select("#select_algorithm").property("value") + curSetup;
@@ -316,6 +316,7 @@ function addButtons() {
         // load a new file when the previous selection is different than the current
         if (dataFilenameDict[key] != curDataFilename) {
             curDataFilename = dataFilenameDict[key];
+            console.log('loading setup file', curDataFilename);
             d3.csv(curDataFilename, function (error, data) {
                 if (error) throw error;
                 curData = data;
@@ -338,13 +339,13 @@ function addButtons() {
     })
 
     d3.select("#select_parameter").on("change", function (d) {
-        updateOverlayText(5);
+        updateOverlayText('selectSpeed');
         curParameter = d3.select(this).property("value");
         btn_run.prop("disabled", false);
     })
 
     d3.select("#select_speed").on("change", function (d) {
-        updateOverlayText(6);
+        updateOverlayText('run');
         curAnimationInterval = d3.select(this).property("value");
     })
 
@@ -363,15 +364,15 @@ function addButtons() {
 
         // toggle text
         if (btn_run.text() == "Run") {
-            updateOverlayText(7);
+            updateOverlayText('pause');
             btn_run.text("Pause");
             btn_run.prop("title", "Pause.");
         } else if (btn_run.text() == "Pause") {
-            updateOverlayText(8);
+            updateOverlayText('resume');
             btn_run.text("Resume");
             btn_run.prop("title", "Resume.");
         } else {
-            updateOverlayText(9);
+            updateOverlayText('clear');
             btn_run.text("Pause");
             btn_run.prop("title", "Pause.");
         }
@@ -391,10 +392,10 @@ function addButtons() {
 
     var btn_clear = $('#btn_clear');
     btn_clear.click(function () {
-        updateOverlayText(10);
+        updateOverlayText('end');
 
         if (!isPaused) { //if it's running, switch to pause state
-        btn_run.prop("title", "Start animation.");
+            btn_run.prop("title", "Start animation.");
             btn_run.toggleClass("pause");
             isPaused = true;
         }
@@ -586,100 +587,31 @@ function updateGraph(dataGroups, opacities) {
         .style("fill", "none")
 }
 
-/* Close when someone clicks on the "x" symbol inside the overlay */
-function closeNav() {
-    // document.getElementById("myNav").style.width = "0%";
-    var $overlay = $('#overlay');
-    $overlay.hide();
-    $overlay.data('current').css('z-index', 1);
-    dontShowAgain = true;
-}
+// $(function () {
+//     var $outer = $('#outer'),
+//         $overlay = $('<div>', {
+//             css: {
+//                 position: 'absolute',
+//                 width: '100%',
+//                 height: '90%',
+//                 top: $outer.position().top,
+//                 left: $outer.position().left,
+//                 backgroundColor: 'rgba(0,0,0,0.7)',
+//                 zIndex: 10,
+//                 display: 'none'
+//             }
+//         }).appendTo($outer);
+//     $overlay.attr('id', 'overlay');
+//     $explainedText = $('<div id="overlay-text" style="z-index: 11"> this is text</div>').appendTo($overlay);
+//     var $confirmBox = $("#confirm");
+//     $confirmBox.css('z-index', 11);
+//     $('#overlay-text').text("Welcome!");
+//     $overlay.data('current', $confirmBox).show();
+// });
 
-function updateOverlayText(tutorialOrder) {
-    if (dontShowAgain) {
-        return;
-    }
-    var $overlay = $('#overlay');
-    var elementDescriptions = {
-        1: ['#select_algorithm', "1. Please select an algorithm."],
-        2: ['#select_setup', "2. Please select a setup. In each setup, there are 22 vehicles in total in two different types. For example, \
-            \"IDM: 14, FUZN: 8\" means 14 IDM vehicles and 8 FUZN vehicles will be shown in animation. You can find the explanation of each type \
-            of vehicles in the legends below the ring."],
-        3: ['#btn_group2', "3. Please select vehicles to be plotted on the graph. In this tutorial, check one checkbox for demonstration purposes."],
-        4: ['#select_parameter', "4. Please select a parameter as a variable to be plotted in y-axis. Time(in seconds) is used in x-axis by default."],
-        5: ['#select_speed', "5. Please select an animation speed. This determines how fast the vehicles get updated in animation."],
-        6: ['#btn_run', "6. Please click the \"Run\" button to run the animation."],
-        7: ['#btn_run', "7. Click the \"Pause\" button to stop running the animation."],
-        8: ['#btn_run', "8. Click the \"Resume\" button to resume the animatoin."],
-        9: ['#btn_clear', "9. Before running next animatoin, click the \"Clear\" button to clear the current animation and the current selection."]
-    }
-    // if (tutorialOrder == 1) {
-    //     var $select_algorithm = $('#select_algorithm');
-    //     $select_algorithm.css('z-index', 11);
-    //     $('#overlay-text').text("1. Please select an algorithm.");
-    //     $overlay.data('current', $select_algorithm).show();
-    // } else if (tutorialOrder == 2) {
-    //     var $select_setup = $('#select_setup');
-    //     $select_setup.css('z-index', 11);
-    //     $('#overlay-text').text("2. Please select a setup. In each setup, there are 22 vehicles in two different types.");
-    //     $overlay.data('current', $select_setup).show()
-    // } else if (tutorialOrder == 3) {
-    //     var $btn_group2 = $('#btn_group2');
-    //     $btn_group2.css('z-index', 11);
-    //     $('#overlay-text').text("3. Please check the vehicles to plot on the graph.");
-    //     $overlay.data('current', $btn_group2).show()
-    // } else if (tutorialOrder == 4) {
-    //     var $select_parameter = $('#select_parameter');
-    //     $select_parameter.css('z-index', 11);
-    //     $('#overlay-text').text("4. Please select a parameter to be plotted on the y axis.");
-    //     $overlay.data('current', $select_parameter).show()
-    // } else if (tutorialOrder == 5) {
-    //     var $speedDropdownBtn = $('#select_speed');
-    //     $speedDropdownBtn.css('z-index', 11);
-    //     $('#overlay-text').text("5. Please select an animation speed. This determines how fast the vehicles get updated in animation.");
-    //     $overlay.data('current', $speedDropdownBtn).show()
-    // } else if (tutorialOrder == 6) {
-    //     var $btn_run = $('#btn_run');
-    //     $btn_run.css('z-index', 11);
-    //     $('#overlay-text').text("6. Please press the \"Run\" button to run the Ring and plot the graph.");
-    //     $overlay.data('current', $btn_run).show()
-    // } else if (tutorialOrder == 7) {
-    //     var $btn_run = $('#btn_run');
-    //     $btn_run.css('z-index', 11);
-    //     $('#overlay-text').text("7. Press the \"Pause\" button to stop running the Ring and plotting the graph.");
-    //     $overlay.data('current', $btn_run).show()
-    // } else if (tutorialOrder == 8) {
-    //     var $btn_run = $('#btn_run');
-    //     $btn_run.css('z-index', 11);
-    //     $('#overlay-text').text("8. Press the \"Resume\" to resume the current animatoin.");
-    //     $overlay.data('current', $btn_run).show()
-    // } else if (tutorialOrder == 9) {
-    //     var $btn_clear = $('#btn_clear');
-    //     $btn_clear.css('z-index', 11);
-    //     $('#overlay-text').text("9. Press the \"Clear\" button before running next animatoin.");
-    //     $overlay.data('current', $btn_clear).show()
-    if (tutorialOrder < 10) {
-        var curElementId = elementDescriptions[tutorialOrder][0];
-        var $element = $(curElementId);
-        $element.css('z-index', 11);
-        if (tutorialOrder > 1) {
-            var prevElementId = elementDescriptions[tutorialOrder - 1][0];
-            // hide the previous different element and focus on the current element only
-            if (curElementId != prevElementId) {
-                $(prevElementId).css('z-index', 10);
-            }
-        }
-        $('#overlay-text').text(elementDescriptions[tutorialOrder][1]);
-        $overlay.data('current', $element).show();
-    } else if (tutorialOrder == 10) {
-        $closeBtn = $('<div id="btn_close"><a href="javascript:void(0)" style="color: red" class="closebtn" onclick="closeNav()">&times;</a></div>').appendTo($overlay);
-        $('#overlay-text').text("Congratulations! You have finished the quick tour! Have fun!");
-        $("#btn_clear").css('z-index', 10);
-    } else {
-        $overlay.hide();
-        $overlay.data('current').css('z-index', 1);
-    }
-}
+
+
+
 
 //save algorithm strings, setup strings from filenames, and create a dictionary with algorithm as keys and setup as values
 function extractAlgorithmsAndSetups(algorithms, filename_dict, algoSetupDict, filenames) {
@@ -801,29 +733,6 @@ function loadMetricsFile(filename) {
 
 }
 
-function functionConfirm(msg, myYes, myNo) {
-
-    var confirmBox = $("#confirm");
-    confirmBox.find(".message").text(msg);
-    confirmBox.find(".yes,.no").unbind().click(function () {
-        confirmBox.hide();
-    });
-    confirmBox.find(".yes").click(myYes);
-    confirmBox.find(".no").click(myNo);
-    confirmBox.show();
-}
-
-function tutorialConfirm() {
-    functionConfirm("Hi! Would you like a quick tour?", function yes() {
-        updateOverlayText(1);
-    },
-        function no() {
-            dontShowAgain = true;
-            var $overlay = $('#overlay');
-            $overlay.hide();
-        });
-}
-
 var id;
 var created = false;
 var namesofHV;
@@ -859,7 +768,6 @@ function startRing(data) {
     //update vehicles position around the ring
     function frame() {
         if (pos >= arrayx[0].length) {
-            // console.log("cleared")
             clearInterval(id);
             created = false;
 
