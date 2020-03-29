@@ -139,7 +139,7 @@ function addCarCheckboxes(car_names) {
 function updateRunBtnTooltip() {
     var content = "";
     if (curAlgorithm && curSetup && curDistribution && curParameter && curAnimationInterval) {
-        content += "Ready to Run!\n";
+        content += "Ready to run!\n";
     } else {
         content += 'Status: Missing the following selection(s):\n'
         if (curAlgorithm == null) {
@@ -599,33 +599,37 @@ function updatePage(selectedParameter, data, selectedKeys) {
     // get all unique ids
     var uniqueMatches = matches.filter(onlyUnique);
 
-    // for each type of cars, decreases its corresponding capacities based on the number of 
-    // cars in the group
-    var curIndices = {};
-    var counts = {}
-    for (i = 0; i < uniqueMatches.length; ++i) {
-        console.log("uniqueMatch", uniqueMatches[i]);
-        curIndices[uniqueMatches[i]] = 0;
-        counts[uniqueMatches[i]] = 0;
-    }
+    // // for each type of cars, decreases its corresponding capacities based on the number of 
+    // // cars in the group
+    // var curIndices = {};
+    // var counts = {}
+    // for (i = 0; i < uniqueMatches.length; ++i) {
+    //     console.log("uniqueMatch", uniqueMatches[i]);
+    //     curIndices[uniqueMatches[i]] = 0;
+    //     counts[uniqueMatches[i]] = 0;
+    // }
 
-    // count number of cars in each group
-    for (i = 0; i < selectedKeys.length; ++i) {
-        var myRegex = /([^_]*)(_)(.*)/g;// can be used once, so have to declared as local variable
-        if (car_ids.includes(selectedKeys[i])) {
-            counts[myRegex.exec(selectedKeys[i])[1]] += 1;
-        }
-    }
+    // // count number of cars in each group
+    // for (i = 0; i < selectedKeys.length; ++i) {
+    //     var myRegex = /([^_]*)(_)(.*)/g;// can be used once, so have to declared as local variable
+    //     if (car_ids.includes(selectedKeys[i])) {
+    //         counts[myRegex.exec(selectedKeys[i])[1]] += 1;
+    //     }
+    // }
 
-    // use differnt opacities based on different type of ids
+    // // use differnt opacities based on different type of ids
+    // for (i = 0; i < selectedKeys.length; ++i) {
+    //     if (car_ids.includes(selectedKeys[i])) {
+    //         var myRegex = /([^_]*)(_)(.*)/g;
+    //         var selectedKeyMatch = myRegex.exec(selectedKeys[i])[1];
+    //         var j = uniqueMatches.indexOf(selectedKeyMatch);
+    //         opacities.push(1 - curIndices[selectedKeyMatch] * (1 / counts[selectedKeyMatch]));
+    //         curIndices[selectedKeyMatch] += 1;
+    //     }
+    // }
+
     for (i = 0; i < selectedKeys.length; ++i) {
-        if (car_ids.includes(selectedKeys[i])) {
-            var myRegex = /([^_]*)(_)(.*)/g;
-            var selectedKeyMatch = myRegex.exec(selectedKeys[i])[1];
-            var j = uniqueMatches.indexOf(selectedKeyMatch);
-            opacities.push(1 - curIndices[selectedKeyMatch] * (1 / counts[selectedKeyMatch]));
-            curIndices[selectedKeyMatch] += 1;
-        }
+        opacities.push(1 - i * (1 / selectedKeys.length) * 0.5);
     }
     
     updateGraph(getSelectedDataGroupedById(selectedParameter, data, selectedKeys), opacities);
