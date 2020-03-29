@@ -1,11 +1,13 @@
-
+"use strict;" // Prevent memory leaks caused by declaring global vars
 // User Selection Properties
-var curParameter;
-var curData = "";
-var curDataFilename = "";// global var in file_list.js
-var curAlgorithm;
-var curSetup;
-var curAnimationInterval = 25;
+var curData = null;
+var curDataFilename = null;// global var in file_list.js
+var curAlgorithm = null;
+var curSetup = null;
+var curDistribution = null
+var curParameter = null;
+var curAnimationInterval = null;// speed
+
 // state
 var dontShowAgain = false;
 var isPaused = true;
@@ -23,7 +25,9 @@ var yLabels = { "Absolute Position": "Absolute Position (m)", CO: "CO (mg/s)", N
 var yLabel;
 var graphTitle;
 var duration = 500; // in ms, smaller makes the animation of line graph faster
-// var lineColors = {}; // {car_id:color_code} 
+// var lineColors = {}; // {car_id:color_code}
+var PARAMETER_DICT = { "Absolute Position": "abs_pos", "CO": "CO", "NOx": "NOx", "fuel": "fuel", "PMx": "PMx", "speed": "speed" };
+var ANIMATION_SPEED_DICT = { "-- animation speed --": "-- animation speed --", "fast": 15, "normal": 25, "slow": 35 };
 
 //scaling and range of line graph
 var x = d3.scaleLinear()
@@ -126,7 +130,7 @@ function addCarCheckboxes(car_names) {
 
     // a checkbox to select all vehicle
     d3.select("#checkbox_select_all").on("change", function (d) {
-        updateOverlayText(4);
+        updateOverlayText(5);
         var childN = document.getElementById("btn_group2").childNodes;
         for (i = 0; i < childN.length; ++i) {
             // select or deselect all other checkboxes based on this checkbox's value
@@ -137,13 +141,13 @@ function addCarCheckboxes(car_names) {
     })
 }
 
-// delete all checkboxes of car options
-function deleteCarCheckboxes() {
-    const myNode = document.getElementById("btn_group2");
-    while (myNode.firstChild) {
-        myNode.removeChild(myNode.firstChild);
-    }
-}
+// // delete all checkboxes of car options
+// function deleteCarCheckboxes() {
+//     const myNode = document.getElementById("btn_group2");
+//     while (myNode.firstChild) {
+//         myNode.removeChild(myNode.firstChild);
+//     }
+// }
 
 // returns all selected cars'text
 function getCarCheckedValues() {
@@ -163,7 +167,8 @@ function updateCheckboxesTextColors() {
     var color = d3.scaleOrdinal(d3.schemeCategory10);  // set the colour scale
     for (i = 0; i < childN.length; ++i) {
         if (childN[i].childNodes[1].checked == true) {
-            var myRegex = /(.*)(_)(.*)/g;
+            // var myRegex = /(.*)(_)(.*)/g;
+            var myRegex = /([^_]*)(_)(.*)/g; // for something like MLYAU1_5_0
             var match = myRegex.exec(childN[i].firstChild.textContent);
             if (match != undefined) {
                 childN[i].style.color = color(match[1]);
@@ -176,13 +181,15 @@ function addButtons() {
     // strings to be used in dropdown menus
     var algorithmGroup = ['-- Algorithm --'];
     var setupGroup = ['-- Setup --'];
+    var distributionGroup = ['-- Distribution --'];
     var parameterGroup = ['-- Parameter --', 'Absolute Position', 'CO', 'NOx', 'fuel', 'PMx', 'speed'];
 
-    var dataFilenameDict = {};
-    var algoSetupDict = {};
-    var metricsFilenameDict = {};
+    var dataFilenameDict = {}; // {ALGO+SETUP: FILENAME}
+    var algoSetupDistDict = {}; // This is a nested dictionary {ALGO1: {SETUP1: [DIST1, DIST2], SETUP2: [DIST1]}}
+    var metricsFilenameDict = {}; // {SETUP+DIST: METRICS_FILE_NAME}
 
-    extractAlgorithmsAndSetups(algorithmGroup, dataFilenameDict, algoSetupDict, FILE_LIST);
+    extractAlgorithmsAndSetups(algorithmGroup, dataFilenameDict, algoSetupDistDict, FILE_LIST);
+
     loadMetricsFileNames(metricsFilenameDict, METRICS_FILE_LIST);
 
     // *********************** add options to each dropdown menu *******************************
@@ -209,7 +216,7 @@ function addButtons() {
 
 
     // add options to the button
-    setupDropdown = d3.select("#select_setup")
+    d3.select("#select_setup")
         .selectAll('myOptions')
         .data(setupGroup)
         .enter()
@@ -227,6 +234,26 @@ function addButtons() {
     $("#select_setup").prop("disabled", true);
 
     // add options to the button
+    d3.select("#select_distribution")
+        .selectAll('myOptions')
+        .data(distributionGroup)
+        .enter()
+        .append('option')
+        .text(function (d) {
+            return d;
+        }) // text showed in the menu
+        .attr("value", function (d) { return d; }) // corresponding value returned by the button
+        .each(function (d) {
+            if (d == "-- Distribution --") {
+                d3.select(this).property("disabled", true)
+            }
+        })
+
+    $("#select_distribution").prop("disabled", true);
+
+
+
+    // add options to the button
     d3.select("#select_parameter")
         .selectAll('myOptions')
         .data(parameterGroup)
@@ -240,7 +267,8 @@ function addButtons() {
             }
         });
 
-    animationSpeeds = { "-- animation speed --": "-- animation speed --", "fast": 15, "normal": 25, "slow": 35 }
+    $("#select_parameter").prop("disabled", true);
+
     // add options to the button
     d3.select("#select_speed")
         .selectAll('myOptions')
@@ -248,40 +276,52 @@ function addButtons() {
         .enter()
         .append('option')
         .text(function (d) { return d; }) // text showed in the menu
-        .attr("value", function (d) { return animationSpeeds[d]; }) // corresponding value returned by the button
+        .attr("value", function (d) { return ANIMATION_SPEED_DICT[d]; }) // corresponding value returned by the button
         .each(function (d) {
             if (d == "-- animation speed --") {
                 d3.select(this).property("disabled", true)
             }
         });
 
-    $("#select_parameter").prop("disabled", true);
+    // $("#select_speed").prop("disabled", true);
 
     // ******************* Define functions for each dropdown menu **************************
 
     d3.select("#select_algorithm").on("change", function (d) {
-        updateOverlayText(2);
+        updateOverlayText(1);
 
         $("#checkbox_title").hide();
         $("#table_title").hide();
-        d3.select("#metrics_table").remove();
-        var btn_run = $("#btn_run");
-        btn_run.prop("disabled", true);
+        // d3.select("#metrics_table").remove();
+        removeAllChildrenByID("table_container_metrics");
+        $("#btn_run").prop("disabled", true);
+        $("#btn_clear").prop("disabled", true);
         $('#select_setup').prop("disabled", false);
+        // reset or remove other elements
+        $('#select_setup')[0].selectedIndex = 0;
+        $("#select_distribution")[0].selectedIndex = 0;
+        $("#select_parameter")[0].selectedIndex = 0;
+        // deleteCarCheckboxes("btn_group2"); //
+        removeAllChildrenByID("btn_group2"); //remove car Checkboxes
+        curSetup = null;
+        curDistribution = null;
+        curParameter = null;
 
         curAlgorithm = d3.select(this).property("value");
         updateTitle(curAlgorithm);
 
-        // clear setups in dropdown menu
-        var select_setup = document.getElementById('select_setup');
-        while (select_setup.options.length > 1) {
-            select_setup.remove(1);
+        var select_setup_options = document.getElementById('select_setup');
+        // clear the options (except the first one)in setup dropdown menu
+        while (select_setup_options.options.length > 1) {
+            select_setup_options.remove(1);
         }
 
         // add and sort setup options
-        var setupOptions = [];
-        for (i = 0; i < algoSetupDict[curAlgorithm].length; ++i) {
-            setupOptions.push(algoSetupDict[curAlgorithm][i]);
+        var setupOptions = []; // tempararily holds current options which will be sorted before adding to the dropdown
+
+        const setups = Object.keys(algoSetupDistDict[curAlgorithm]);
+        for (i = 0; i < setups.length; ++i) {
+            setupOptions.push(setups[i]);
         }
         // sort alphanumeric strings
         var collator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' });
@@ -291,61 +331,128 @@ function addButtons() {
         for (var i = 0; i < setupOptions.length; i++) {
             var option = document.createElement("option");
 
-            /* e.g. 0IDM_22FS*/
+            /* format: 0IDM_22FS*/
             var myRegex = /(\d*)(.*)(_)(\d*)(.*)/g;
             var match = myRegex.exec(setupOptions[i]);
+            // 0IDM_22FS becomes IDM: 0, FS: 22
             option.text = match[2] + ": " + match[1] + ", " + match[5] + ": " + match[4];
 
             // option.text = options[i];
             option.value = setupOptions[i];
-            select_setup.add(option);
+            select_setup_options.add(option);
         }
 
-        // reset or remove other elements
-        $('#select_setup')[0].selectedIndex = 0;
-        $("#select_parameter")[0].selectedIndex = 0;
-        deleteCarCheckboxes();
     })
 
     d3.select("#select_setup").on("change", function (d) {
+        updateOverlayText(2);
+
+        $("#checkbox_title").hide();
+        $("#table_title").hide();
+        // d3.select("#metrics_table").remove();
+        removeAllChildrenByID("table_container_metrics");
+        $("#btn_run").prop("disabled", true);
+        $("#btn_clear").prop("disabled", true);
+        $('#select_distribution').prop("disabled", false);
+        curDistribution = null;
+        curParameter = null;
+        $("#select_distribution")[0].selectedIndex = 0;
+        $("#select_parameter")[0].selectedIndex = 0;
+
+        if (curSetup != d3.select(this).property("value")) {
+            // deleteCarCheckboxes();
+            removeAllChildrenByID("btn_group2"); //remove car Checkboxes
+            curSetup = d3.select(this).property("value");
+        }
+        // var key = d3.select("#select_algorithm").property("value") + curSetup;
+        var select_distribution_options = document.getElementById('select_distribution');
+        // clear the options(except the first one) in distribution dropdown menu
+        while (select_distribution_options.options.length > 1) {
+            select_distribution_options.remove(1);
+        }
+        var distributionOptions = algoSetupDistDict[curAlgorithm][curSetup];
+
+        for (var i = 0; i < distributionOptions.length; i++) {
+            var option = document.createElement("option");
+            option.text = distributionOptions[i];
+            option.value = distributionOptions[i];
+            select_distribution_options.add(option);
+        }
+    })
+
+    d3.select('#select_distribution').on("change", function (d) {
         updateOverlayText(3);
 
-        curSetup = d3.select(this).property("value");
-        var key = d3.select("#select_algorithm").property("value") + curSetup;
+        $("#btn_clear").prop("disabled", true);
+        $("#select_parameter")[0].selectedIndex = 0;
+        curParameter = null;
+        curDistribution = d3.select(this).property("value");
+        var key = curAlgorithm + curSetup + curDistribution;
 
         // load a new file when the previous selection is different than the current
         if (dataFilenameDict[key] != curDataFilename) {
+            curData = null;// avoild consuming memory when are loading new data while keeping a copy of previous
+
+            // enable loading animatin 
+            var x = document.getElementById("loading");
+            x.style.display = "block";
+
             curDataFilename = dataFilenameDict[key];
-            d3.csv(curDataFilename, function (error, data) {
+
+            d3.csv(curDataFilename + "?" + (new Date).getTime(), function (error, data) {// add a string to filename to avoid caching
                 if (error) throw error;
                 curData = data;
-                $("#select_parameter").each(function (d) {
-                    if (d == "Parameter") {
-                        d3.select(this).property("disabled", true)
+                data = null;// avoild keeping the second copy in this scope which consumes lots of memory
+
+                // loading animation
+                var x = document.getElementById("loading");
+                x.style.display = "none";
+
+                // only display the available parameters for the current data
+                var keys = Object.keys(curData[0]);
+                var op = document.getElementById("select_parameter").getElementsByTagName("option");
+                for (var i = 0; i < op.length; i++) {
+                    if (op[i].value == "-- Parameter --") {
+                        op[i].disabled = true;
+                    } else if (keys.includes(PARAMETER_DICT[op[i].value])) {
+                        op[i].disabled = false;
+                    } else {
+                        op[i].disabled = true;
                     }
-                });
+                }
+
                 $("#select_parameter").prop("disabled", false);
 
-                var uniqueCarIds = d3.map(data, function (d) { return (d.id) }).keys();
+                // get and sort unique CarIDs
+                var uniqueCarIds = d3.map(curData, function (d) { return (d.id) }).keys();
                 var collator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' });
                 uniqueCarIds.sort(collator.compare);
 
-                deleteCarCheckboxes();
-                addCarCheckboxes(uniqueCarIds);
-                loadMetricsFile(metricsFilenameDict[curSetup]);
+                // shoudn't generate new checkboxes (unless if they don't exist) when switching distribution for the same setup  
+                if (!(document.getElementById("btn_group2").firstChild)) {
+                    removeAllChildrenByID("btn_group2"); //remove car Checkboxes
+                    addCarCheckboxes(uniqueCarIds);
+                }
+                loadMetricsFile(metricsFilenameDict[curSetup + curDistribution]); //restore
             });
         }
     })
 
     d3.select("#select_parameter").on("change", function (d) {
+        // $("#btn_clear").prop("disabled", true);
         updateOverlayText(5);
         curParameter = d3.select(this).property("value");
-        btn_run.prop("disabled", false);
+        if (curAnimationInterval != null) {
+            btn_run.prop("disabled", false);
+        }
     })
 
     d3.select("#select_speed").on("change", function (d) {
         updateOverlayText(6);
         curAnimationInterval = d3.select(this).property("value");
+        if (curParameter != null) {
+            btn_run.prop("disabled", false);
+        }
     })
 
     //****************************** define function for each button *****************************
@@ -376,7 +483,7 @@ function addButtons() {
             btn_run.prop("title", "Pause.");
         }
 
-        // update the page cotent based on the selection when it starts running next animation
+        // update the page content based on the selection when it starts running next animation
         if (isInitialRun) {
             updatePage(curParameter, curData, getCarCheckedValues());
             isInitialRun = false;
@@ -392,9 +499,10 @@ function addButtons() {
     var btn_clear = $('#btn_clear');
     btn_clear.click(function () {
         updateOverlayText(10);
-
+        
+        btn_clear.prop("disabled", true);
         if (!isPaused) { //if it's running, switch to pause state
-        btn_run.prop("title", "Start animation.");
+            btn_run.prop("title", "Start animation.");
             btn_run.toggleClass("pause");
             isPaused = true;
         }
@@ -412,8 +520,11 @@ function addButtons() {
 
         $('.dropdown').prop('disabled', false);
         $('.checkbox-container').children().prop('disabled', false);
-        $("#btn_run").prop("disabled", false);
-        btn_run.prop("disabled", false);
+        // $("#btn_run").prop("disabled", false);
+
+        if (curAlgorithm != null && curSetup != null && curDistribution != null && curParameter != null && curAnimationInterval != null) {
+            btn_run.prop("disabled", false);
+        }
 
         btn_run.text("Run");
 
@@ -430,8 +541,7 @@ function addButtons() {
 function getSelectedDataGroupedById(selectedOption, data, selectedKeys) {
     var dataToPlot = [];
     var curYMax = Number.NEGATIVE_INFINITY;
-    var parameters = { "Absolute Position": "abs_pos", "CO": "CO", "NOx": "NOx", "fuel": "fuel", "PMx": "PMx", "speed": "speed" };
-    var colName = parameters[selectedOption];
+    var colName = PARAMETER_DICT[selectedOption];
     for (i = 0; i < data.length; ++i) {
         dataToPlot.push({ "id": data[i].id, "x": data[i].time, "y": data[i][colName] });
     }
@@ -522,7 +632,6 @@ function getLineColors(dataGroups) {
     //     lineColors2[dataGroups[i].key] = color(dataGroups[i].key);
     // }
     // var uniqueColors = Object.keys(lineColors1).filter(onlyUnique);
-    // console.log("uniquecolors", uniqueColors);
     // if (uniqueColors.length == 1 || dataGroups.length < 4) {
     //     return lineColors2
     // } else {
@@ -541,14 +650,14 @@ function getLineColors(dataGroups) {
 // A function that updates the chart
 function updateGraph(dataGroups, opacities) {
 
-    // Loop through each symbol / key
+    // add a line for each vehicle
     lineColors = getLineColors(dataGroups);
     dataGroups.forEach(function (d, index) {
 
         var path = svg.append("path")
             .datum(dataGroups)
             .attr("class", "line")
-            .attr("d", line(d.values))//
+            .attr("d", line(d.values))
             .style("stroke", function () { // Add dynamically
                 return d.color = lineColors[index];
             })
@@ -596,69 +705,28 @@ function closeNav() {
 }
 
 function updateOverlayText(tutorialOrder) {
+
+    console.log("updateOverlayText" + tutorialOrder);
     if (dontShowAgain) {
         return;
     }
     var $overlay = $('#overlay');
     var elementDescriptions = {
-        1: ['#select_algorithm', "1. Please select an algorithm."],
-        2: ['#select_setup', "2. Please select a setup. In each setup, there are 22 vehicles in total in two different types. For example, \
+        0: ['#select_algorithm', "1. Please select an algorithm."],
+        1: ['#select_setup', "2. Please select a setup. In each setup, there are 22 vehicles in total in two different types. For example, \
             \"IDM: 14, FUZN: 8\" means 14 IDM vehicles and 8 FUZN vehicles will be shown in animation. You can find the explanation of each type \
             of vehicles in the legends below the ring."],
-        3: ['#btn_group2', "3. Please select vehicles to be plotted on the graph. In this tutorial, check one checkbox for demonstration purposes."],
-        4: ['#select_parameter', "4. Please select a parameter as a variable to be plotted in y-axis. Time(in seconds) is used in x-axis by default."],
-        5: ['#select_speed', "5. Please select an animation speed. This determines how fast the vehicles get updated in animation."],
-        6: ['#btn_run', "6. Please click the \"Run\" button to run the animation."],
-        7: ['#btn_run', "7. Click the \"Pause\" button to stop running the animation."],
-        8: ['#btn_run', "8. Click the \"Resume\" button to resume the animatoin."],
-        9: ['#btn_clear', "9. Before running next animatoin, click the \"Clear\" button to clear the current animation and the current selection."]
+        2: ['#select_distribution', "3. Please select a distribution."],
+        3: ['#btn_group2', "4. Please select vehicles to be plotted on the graph. In this tutorial, check one checkbox for demonstration purposes."],
+        4: ['#select_parameter', "5. Please select a parameter as a variable to be plotted in y-axis. Time(in seconds) is used in x-axis by default."],
+        5: ['#select_speed', "6. Please select an animation speed. This determines how fast the vehicles get updated in animation."],
+        6: ['#btn_run', "7. Please click the \"Run\" button to run the animation."],
+        7: ['#btn_run', "8. Click the \"Pause\" button to stop running the animation."],
+        8: ['#btn_run', "9. Click the \"Resume\" button to resume the animatoin."],
+        9: ['#btn_clear', "10. Before running next animatoin, click the \"Clear\" button to clear the current animation and the current selection."]
     }
-    // if (tutorialOrder == 1) {
-    //     var $select_algorithm = $('#select_algorithm');
-    //     $select_algorithm.css('z-index', 11);
-    //     $('#overlay-text').text("1. Please select an algorithm.");
-    //     $overlay.data('current', $select_algorithm).show();
-    // } else if (tutorialOrder == 2) {
-    //     var $select_setup = $('#select_setup');
-    //     $select_setup.css('z-index', 11);
-    //     $('#overlay-text').text("2. Please select a setup. In each setup, there are 22 vehicles in two different types.");
-    //     $overlay.data('current', $select_setup).show()
-    // } else if (tutorialOrder == 3) {
-    //     var $btn_group2 = $('#btn_group2');
-    //     $btn_group2.css('z-index', 11);
-    //     $('#overlay-text').text("3. Please check the vehicles to plot on the graph.");
-    //     $overlay.data('current', $btn_group2).show()
-    // } else if (tutorialOrder == 4) {
-    //     var $select_parameter = $('#select_parameter');
-    //     $select_parameter.css('z-index', 11);
-    //     $('#overlay-text').text("4. Please select a parameter to be plotted on the y axis.");
-    //     $overlay.data('current', $select_parameter).show()
-    // } else if (tutorialOrder == 5) {
-    //     var $speedDropdownBtn = $('#select_speed');
-    //     $speedDropdownBtn.css('z-index', 11);
-    //     $('#overlay-text').text("5. Please select an animation speed. This determines how fast the vehicles get updated in animation.");
-    //     $overlay.data('current', $speedDropdownBtn).show()
-    // } else if (tutorialOrder == 6) {
-    //     var $btn_run = $('#btn_run');
-    //     $btn_run.css('z-index', 11);
-    //     $('#overlay-text').text("6. Please press the \"Run\" button to run the Ring and plot the graph.");
-    //     $overlay.data('current', $btn_run).show()
-    // } else if (tutorialOrder == 7) {
-    //     var $btn_run = $('#btn_run');
-    //     $btn_run.css('z-index', 11);
-    //     $('#overlay-text').text("7. Press the \"Pause\" button to stop running the Ring and plotting the graph.");
-    //     $overlay.data('current', $btn_run).show()
-    // } else if (tutorialOrder == 8) {
-    //     var $btn_run = $('#btn_run');
-    //     $btn_run.css('z-index', 11);
-    //     $('#overlay-text').text("8. Press the \"Resume\" to resume the current animatoin.");
-    //     $overlay.data('current', $btn_run).show()
-    // } else if (tutorialOrder == 9) {
-    //     var $btn_clear = $('#btn_clear');
-    //     $btn_clear.css('z-index', 11);
-    //     $('#overlay-text').text("9. Press the \"Clear\" button before running next animatoin.");
-    //     $overlay.data('current', $btn_clear).show()
-    if (tutorialOrder < 10) {
+
+    if (tutorialOrder < Object.keys(elementDescriptions).length) {
         var curElementId = elementDescriptions[tutorialOrder][0];
         var $element = $(curElementId);
         $element.css('z-index', 11);
@@ -671,7 +739,7 @@ function updateOverlayText(tutorialOrder) {
         }
         $('#overlay-text').text(elementDescriptions[tutorialOrder][1]);
         $overlay.data('current', $element).show();
-    } else if (tutorialOrder == 10) {
+    } else if (tutorialOrder == Object.keys(elementDescriptions).length) { // display the last msg before exiting the tutorial
         $closeBtn = $('<div id="btn_close"><a href="javascript:void(0)" style="color: red" class="closebtn" onclick="closeNav()">&times;</a></div>').appendTo($overlay);
         $('#overlay-text').text("Congratulations! You have finished the quick tour! Have fun!");
         $("#btn_clear").css('z-index', 10);
@@ -680,18 +748,22 @@ function updateOverlayText(tutorialOrder) {
         $overlay.data('current').css('z-index', 1);
     }
 }
-
+// filename_dict algo+setup: filename
+// algoSetupDict algo: setup
+//
 //save algorithm strings, setup strings from filenames, and create a dictionary with algorithm as keys and setup as values
-function extractAlgorithmsAndSetups(algorithms, filename_dict, algoSetupDict, filenames) {
+function extractAlgorithmsAndSetups(algorithms, algoSetupDistFilenameDict, algoSetupDict, filenames) {
 
     //original "data/raw_data/IDM_AVRider_AUG--0IDM_22AUG--sugiyama_20191014-1314411571084081.113794-emission.csv"
     //current format: data/raw_data/IDM_AVRider_AUG--0IDM_22AUG
+    //latest format: data/raw_data/IDM_AVRider_AUG--0IDM_22AUG--platooned.csv
+    // {ALGO:{SETUP: {DISTRIBUTION}}}
 
     var algos = [];
     for (i = 0; i < filenames.length; ++i) {
 
         // var myRegex = /(.*)(--)(.*)(--)(.*)/g;
-        var myRegex = /(.*)(--)(.*)(.csv)/g;
+        var myRegex = /(.*)(--)(.*)(--)(.*)(.csv)/g;
         var filename = filenames[i];
 
         //replace string "abc/" with empty to eliminate the directory str and extract the filename
@@ -699,19 +771,30 @@ function extractAlgorithmsAndSetups(algorithms, filename_dict, algoSetupDict, fi
 
         var ALGO_INDEX = 1;
         var SETUP_INDEX = 3;
+        var DISTRIBUTION_INDEX = 5;
 
         var match = myRegex.exec(filename);
         algos.push(match[ALGO_INDEX]);
         var algo_str = match[ALGO_INDEX];
+        var setup_str = match[SETUP_INDEX];
+        var dist_str = match[DISTRIBUTION_INDEX];
+
+        // if (algoSetupDict[algo_str] === undefined) {
+        //     algoSetupDict[algo_str] = [];
+        // }
+
+        // algoSetupDict[algo_str].push(match[SETUP_INDEX]);
 
         if (algoSetupDict[algo_str] === undefined) {
-            algoSetupDict[algo_str] = [];
+            algoSetupDict[algo_str] = {};
         }
+        if (!(setup_str in algoSetupDict[algo_str])) {
+            algoSetupDict[algo_str][setup_str] = [];
+        }
+        algoSetupDict[algo_str][setup_str].push(dist_str);
 
-        algoSetupDict[algo_str].push(match[SETUP_INDEX]);
-
-        var key = match[1] + match[SETUP_INDEX];
-        filename_dict[key] = filenames[i];
+        var key = match[ALGO_INDEX] + match[SETUP_INDEX] + match[DISTRIBUTION_INDEX];
+        algoSetupDistFilenameDict[key] = filenames[i];
     }
 
     // save unique algorithm strings
@@ -723,13 +806,14 @@ function extractAlgorithmsAndSetups(algorithms, filename_dict, algoSetupDict, fi
 
 function loadMetricsFileNames(metricsFilenameDict, filenames) {
     for (i = 0; i < filenames.length; ++i) {
-        var myRegex = /(.*)(\.)(csv)/g;
+        var myRegex = /(.*)(--)(.*)(\.)(csv)/g;
         var filename = filenames[i];
         filename = filename.replace(/^.*[\\\/]/, '')
         filename = filename.substring(4); //ignore Big_0IDM_22AUG
         var matches = myRegex.exec(filename);
         var setup_str = matches[1];
-        metricsFilenameDict[setup_str] = filenames[i];
+        var distribution_str = matches[3];
+        metricsFilenameDict[setup_str + distribution_str] = filenames[i];
     }
 }
 
@@ -745,7 +829,8 @@ function changeverticalTimeLinePos(curr_x) {
 }
 
 function loadMetricsFile(filename) {
-    d3.select("#metrics_table").remove();
+    // d3.select("#metrics_table").remove();
+    removeAllChildrenByID("table_container_metrics");
     // The table generation function
     function tabulate(data, columns) {
         var table = d3.select("#table_container_metrics").append("table")
@@ -786,7 +871,6 @@ function loadMetricsFile(filename) {
 
         return table;
     }
-    // console.log("loading metrics " + filename);
     if (filename != null) {
         $("#table_title").show();
     } else {
@@ -815,7 +899,7 @@ function functionConfirm(msg, myYes, myNo) {
 
 function tutorialConfirm() {
     functionConfirm("Hi! Would you like a quick tour?", function yes() {
-        updateOverlayText(1);
+        updateOverlayText(0);
     },
         function no() {
             dontShowAgain = true;
@@ -859,7 +943,6 @@ function startRing(data) {
     //update vehicles position around the ring
     function frame() {
         if (pos >= arrayx[0].length) {
-            // console.log("cleared")
             clearInterval(id);
             created = false;
 

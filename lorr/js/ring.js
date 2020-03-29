@@ -10,7 +10,6 @@ function retrieveData(data) {
     var posofAV = [];
     var posofSV = [];
     var position = 0;
-    var id = '';
     var length = 0;
     var HVcars = 0;
     var SVcars = 0;
@@ -19,12 +18,12 @@ function retrieveData(data) {
     length = data.length;
     // console.log(data.length)
     while (position < length) { 
-        id = data[position].id;
-        veh_cls = data[position].veh_cls;
-        if (veh_cls.substr(0, 2) === 'HV') {
+        var id = data[position].id;
+        var vehCls = data[position].veh_cls;
+        if (vehCls.substr(0, 2) === 'HV') {
             HVcars++
             posofHV.push(iteration);
-        } else if (veh_cls.substr(0, 2) === 'SV') {
+        } else if (vehCls.substr(0, 2) === 'SV') {
             SVcars++
             posofSV.push(iteration);
         } else {
@@ -85,11 +84,12 @@ function createelements(posofHV, posofAV, posofSV) {
     for (i = 0; i < posofHV.length; i++) {
         var otherobj = document.createElement("IMG");
         otherobj.id = ('HV' + (posofHV[i]));
-        otherobj.className = "car-img moving-car-img";// two classes
+        otherobj.className = "car-img moving-car-img";// two classes: car-img is the common one for both legend and the one running in the ring
         namesofHV.push('HV' + (posofHV[i]));
         //human vehicle image
         otherobj.setAttribute('src', 'white_car.png');
         otherobj.style.position = "absolute";
+        otherobj.carid = 
         document.getElementById("car-container").appendChild(otherobj);
 
     }
