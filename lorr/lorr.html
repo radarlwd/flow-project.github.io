@@ -186,31 +186,7 @@
         <script src="js/util.js"></script>
         <script src="js/ring.js"></script>
         <script src="js/script.js"></script>
-
-        <script>
-            $(function () {
-                var $outer = $('#outer'),
-                    $overlay = $('<div>', {
-                        css: {
-                            position: 'absolute',
-                            width: '100%',
-                            height: '90%',
-                            top: $outer.position().top,
-                            left: $outer.position().left,
-                            backgroundColor: 'rgba(0,0,0,0.7)',
-                            zIndex: 10,
-                            display: 'none'
-                        }
-                    }).appendTo($outer);
-                $overlay.attr('id', 'overlay');
-                $explainedText = $('<div id="overlay-text" style="z-index: 11"> this is text</div>').appendTo($overlay);
-                var $confirmBox = $("#confirm");
-                $confirmBox.css('z-index', 11);
-                $('#overlay-text').text("Welcome!");
-                $overlay.data('current', $confirmBox).show();
-            });
-            tutorialConfirm();    
-        </script>
+        <script src="js/tutorial.js"></script>
 
         <script src="/assets/js/footer.js"></script>
     </main>

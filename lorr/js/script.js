@@ -1,4 +1,5 @@
-"use strict;" // Prevent memory leaks caused by declaring global vars
+"use strict;" // Prevent memory leaks caused by accidentally declaring global vars
+
 // User Selection Properties
 var curData = null;
 var curDataFilename = null;// global var in file_list.js
@@ -21,13 +22,12 @@ var margin = { top: 60, right: 20, bottom: 60, left: 65 }, // ADJUST
     height = GRAPH_HEIGHT - margin.top - margin.bottom;
 var xMax = { "value": 600.2 };
 var yMax = { "value": 0 };
-var yLabels = { "Absolute Position": "Absolute Position (m)", CO: "CO (mg/s)", NOx: "NOx (mg/s)", fuel: "fuel (ml/s)", PMx: "PMx (mg/s)", speed: "speed (m/s)" };
+var Y_LABELS = { "Absolute Position": "Absolute Position (m)", CO: "CO (mg/s)", NOx: "NOx (mg/s)", fuel: "fuel (ml/s)", PMx: "PMx (mg/s)", speed: "speed (m/s)" };
 var yLabel;
 var graphTitle;
 var duration = 500; // in ms, smaller makes the animation of line graph faster
-// var lineColors = {}; // {car_id:color_code}
 var PARAMETER_DICT = { "Absolute Position": "abs_pos", "CO": "CO", "NOx": "NOx", "fuel": "fuel", "PMx": "PMx", "speed": "speed" };
-var ANIMATION_SPEED_DICT = { "-- animation speed --": "-- animation speed --", "fast": 15, "normal": 25, "slow": 35 };
+var ANIMATION_SPEED_DICT = { "-- Animation Speed --": "-- Animation Speed --", "fast": 15, "normal": 25, "slow": 35 };
 
 //scaling and range of line graph
 var x = d3.scaleLinear()
@@ -45,7 +45,7 @@ var yAxis = d3.axisLeft()
     .scale(y);
 
 var line = d3.line()
-    .defined(function (d) { return curParameter != 'Absolute Position' || d.y > 1; }) //avoid connecting the end point in one cyle to the start point of the next cycle
+    .defined(function (d) { return curParameter != 'Absolute Position' || d.y > 1; }) //avoid connecting the end points in one cyle to the start point of the next cycle
     .x(function (d) { return x(d.x); })
     .y(function (d) { return y(d.y); });
 
@@ -55,11 +55,6 @@ var svg = d3.select("#line_graph").append("svg")
     .attr("height", height + margin.top + margin.bottom)
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-// helper function to be used to find the unique elements in array
-function onlyUnique(value, index, self) {
-    return self.indexOf(value) == index;
-}
 
 function addLineGraph() {
 
@@ -116,7 +111,7 @@ function addCarCheckboxes(car_names) {
         $("#btn_group2").append($checkbox);
 
         $checkbox.on("change", function (d) {
-            updateOverlayText(4);
+            updateOverlayText("selectParameter");
             var childN = document.getElementById("btn_group2").childNodes;
             for (i = 0; i < childN.length; ++i) {
                 childN[i].style.color = "#000000";//set inital color of checkbox to black
@@ -130,7 +125,7 @@ function addCarCheckboxes(car_names) {
 
     // a checkbox to select all vehicle
     d3.select("#checkbox_select_all").on("change", function (d) {
-        updateOverlayText(5);
+        updateOverlayText("selectParameter");
         var childN = document.getElementById("btn_group2").childNodes;
         for (i = 0; i < childN.length; ++i) {
             // select or deselect all other checkboxes based on this checkbox's value
@@ -141,13 +136,30 @@ function addCarCheckboxes(car_names) {
     })
 }
 
-// // delete all checkboxes of car options
-// function deleteCarCheckboxes() {
-//     const myNode = document.getElementById("btn_group2");
-//     while (myNode.firstChild) {
-//         myNode.removeChild(myNode.firstChild);
-//     }
-// }
+function updateRunBtnTooltip() {
+    var content = "";
+    if (curAlgorithm && curSetup && curDistribution && curParameter && curAnimationInterval) {
+        content += "Ready to Run!\n";
+    } else {
+        content += 'Status: Missing the following selection(s):\n'
+        if (curAlgorithm == null) {
+            content += "Algorithm\n";
+        }
+        if (curSetup == null) {
+            content += "Setup\n";
+        }
+        if (curDistribution == null) {
+            content += "Distribution\n";
+        }
+        if (curParameter == null) {
+            content += "Parameter\n";
+        }
+        if (curAnimationInterval == null) {
+            content += "Animation Speed\n";
+        }
+    }
+    document.getElementById('btn_run').setAttribute('title', content);
+}
 
 // returns all selected cars'text
 function getCarCheckedValues() {
@@ -189,111 +201,90 @@ function addButtons() {
     var metricsFilenameDict = {}; // {SETUP+DIST: METRICS_FILE_NAME}
 
     extractAlgorithmsAndSetups(algorithmGroup, dataFilenameDict, algoSetupDistDict, FILE_LIST);
-
     loadMetricsFileNames(metricsFilenameDict, METRICS_FILE_LIST);
 
     // *********************** add options to each dropdown menu *******************************
 
-    // add options to the button
-    d3.select("#select_algorithm")
-        .selectAll('myOptions')
-        .data(algorithmGroup)
-        .enter()
-        .append('option')
-        .text(function (d) {
+    addOptionsToDropdownMenu(
+        "#select_algorithm",
+        algorithmGroup,
+        function (d) {
             if (d != "-- Algorithm --") {
                 return d.substring(12);
             } else {
                 return d;
             }
-        }) // text showed in the menu
-        .attr("value", function (d) { return d; }) // corresponding value returned by the button
-        .each(function (d) {
+        },
+        function (d) { return d; },
+        function (d) {
             if (d == "-- Algorithm --") {
                 d3.select(this).property("disabled", true)
             }
-        });
+        }
+    )
 
-
-    // add options to the button
-    d3.select("#select_setup")
-        .selectAll('myOptions')
-        .data(setupGroup)
-        .enter()
-        .append('option')
-        .text(function (d) {
-            return d;
-        }) // text showed in the menu
-        .attr("value", function (d) { return d; }) // corresponding value returned by the button
-        .each(function (d) {
+    addOptionsToDropdownMenu(
+        "#select_setup",
+        setupGroup,
+        function (d) { return d; },
+        function (d) { return d; },
+        function (d) {
             if (d == "-- Setup --") {
                 d3.select(this).property("disabled", true)
             }
-        })
+        }
+    )
 
     $("#select_setup").prop("disabled", true);
 
-    // add options to the button
-    d3.select("#select_distribution")
-        .selectAll('myOptions')
-        .data(distributionGroup)
-        .enter()
-        .append('option')
-        .text(function (d) {
-            return d;
-        }) // text showed in the menu
-        .attr("value", function (d) { return d; }) // corresponding value returned by the button
-        .each(function (d) {
+    addOptionsToDropdownMenu(
+        "#select_distribution",
+        distributionGroup,
+        function (d) { return d; },
+        function (d) { return d; },
+        function (d) {
             if (d == "-- Distribution --") {
                 d3.select(this).property("disabled", true)
             }
-        })
+        }
+    )
 
     $("#select_distribution").prop("disabled", true);
 
-
-
-    // add options to the button
-    d3.select("#select_parameter")
-        .selectAll('myOptions')
-        .data(parameterGroup)
-        .enter()
-        .append('option')
-        .text(function (d) { return d; }) // text showed in the menu
-        .attr("value", function (d) { return d; }) // corresponding value returned by the button
-        .each(function (d) {
+    addOptionsToDropdownMenu(
+        "#select_parameter",
+        parameterGroup,
+        function (d) { return d; },
+        function (d) { return d; },
+        function (d) {
             if (d == "-- Parameter --") {
                 d3.select(this).property("disabled", true)
             }
-        });
+        }
+    )
 
     $("#select_parameter").prop("disabled", true);
 
-    // add options to the button
-    d3.select("#select_speed")
-        .selectAll('myOptions')
-        .data(["-- animation speed --", "fast", "normal", "slow"])
-        .enter()
-        .append('option')
-        .text(function (d) { return d; }) // text showed in the menu
-        .attr("value", function (d) { return ANIMATION_SPEED_DICT[d]; }) // corresponding value returned by the button
-        .each(function (d) {
-            if (d == "-- animation speed --") {
+    addOptionsToDropdownMenu(
+        "#select_speed",
+        ["-- Animation Speed --", "fast", "normal", "slow"],
+        function (d) { return d; },
+        function (d) { return ANIMATION_SPEED_DICT[d]; },
+        function (d) {
+            if (d == "-- Animation Speed --") {
                 d3.select(this).property("disabled", true)
             }
-        });
+        }
+    )
 
-    // $("#select_speed").prop("disabled", true);
-
-    // ******************* Define functions for each dropdown menu **************************
+    // ******************* Definitoin of dropdown menu functions **************************
 
     d3.select("#select_algorithm").on("change", function (d) {
-        updateOverlayText(1);
-
+        updateOverlayText("selectSetup");
+        removeAllChildrenByID("table_container_metrics");
+        removeAllChildrenByID("btn_group2"); //remove car Checkboxes
         $("#checkbox_title").hide();
         $("#table_title").hide();
-        // d3.select("#metrics_table").remove();
-        removeAllChildrenByID("table_container_metrics");
         $("#btn_run").prop("disabled", true);
         $("#btn_clear").prop("disabled", true);
         $('#select_setup').prop("disabled", false);
@@ -301,13 +292,12 @@ function addButtons() {
         $('#select_setup')[0].selectedIndex = 0;
         $("#select_distribution")[0].selectedIndex = 0;
         $("#select_parameter")[0].selectedIndex = 0;
-        // deleteCarCheckboxes("btn_group2"); //
-        removeAllChildrenByID("btn_group2"); //remove car Checkboxes
         curSetup = null;
         curDistribution = null;
         curParameter = null;
 
         curAlgorithm = d3.select(this).property("value");
+        updateRunBtnTooltip();
         updateTitle(curAlgorithm);
 
         var select_setup_options = document.getElementById('select_setup');
@@ -345,33 +335,35 @@ function addButtons() {
     })
 
     d3.select("#select_setup").on("change", function (d) {
-        updateOverlayText(2);
+        updateOverlayText("selectDistribution");
 
+        removeAllChildrenByID("table_container_metrics");
         $("#checkbox_title").hide();
         $("#table_title").hide();
-        // d3.select("#metrics_table").remove();
-        removeAllChildrenByID("table_container_metrics");
         $("#btn_run").prop("disabled", true);
         $("#btn_clear").prop("disabled", true);
         $('#select_distribution').prop("disabled", false);
-        curDistribution = null;
-        curParameter = null;
         $("#select_distribution")[0].selectedIndex = 0;
         $("#select_parameter")[0].selectedIndex = 0;
+        curParameter = null;
+        curDistribution = null;
 
         if (curSetup != d3.select(this).property("value")) {
             // deleteCarCheckboxes();
             removeAllChildrenByID("btn_group2"); //remove car Checkboxes
             curSetup = d3.select(this).property("value");
         }
-        // var key = d3.select("#select_algorithm").property("value") + curSetup;
+        updateRunBtnTooltip();
+
         var select_distribution_options = document.getElementById('select_distribution');
+
         // clear the options(except the first one) in distribution dropdown menu
         while (select_distribution_options.options.length > 1) {
             select_distribution_options.remove(1);
         }
         var distributionOptions = algoSetupDistDict[curAlgorithm][curSetup];
 
+        // add the distribution options to dropdown
         for (var i = 0; i < distributionOptions.length; i++) {
             var option = document.createElement("option");
             option.text = distributionOptions[i];
@@ -381,17 +373,20 @@ function addButtons() {
     })
 
     d3.select('#select_distribution').on("change", function (d) {
-        updateOverlayText(3);
+        updateOverlayText("checkVehicleID");
 
+        $("#btn_run").prop("disabled", true);
         $("#btn_clear").prop("disabled", true);
         $("#select_parameter")[0].selectedIndex = 0;
         curParameter = null;
+
         curDistribution = d3.select(this).property("value");
         var key = curAlgorithm + curSetup + curDistribution;
+        updateRunBtnTooltip();
 
         // load a new file when the previous selection is different than the current
         if (dataFilenameDict[key] != curDataFilename) {
-            curData = null;// avoild consuming memory when are loading new data while keeping a copy of previous
+            curData = null;// avoild consuming MEMORY when are loading new data while keeping a copy of previous
 
             // enable loading animatin 
             var x = document.getElementById("loading");
@@ -402,7 +397,7 @@ function addButtons() {
             d3.csv(curDataFilename + "?" + (new Date).getTime(), function (error, data) {// add a string to filename to avoid caching
                 if (error) throw error;
                 curData = data;
-                data = null;// avoild keeping the second copy in this scope which consumes lots of memory
+                data = null;// avoild keeping the second copy in this scope which consumes lots of MEMORY
 
                 // loading animation
                 var x = document.getElementById("loading");
@@ -428,28 +423,29 @@ function addButtons() {
                 var collator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' });
                 uniqueCarIds.sort(collator.compare);
 
-                // shoudn't generate new checkboxes (unless if they don't exist) when switching distribution for the same setup  
-                if (!(document.getElementById("btn_group2").firstChild)) {
-                    removeAllChildrenByID("btn_group2"); //remove car Checkboxes
-                    addCarCheckboxes(uniqueCarIds);
-                }
+                removeAllChildrenByID("btn_group2"); //remove car Checkboxes
+                addCarCheckboxes(uniqueCarIds);
+
                 loadMetricsFile(metricsFilenameDict[curSetup + curDistribution]); //restore
             });
         }
     })
 
     d3.select("#select_parameter").on("change", function (d) {
-        // $("#btn_clear").prop("disabled", true);
-        updateOverlayText(5);
+        updateOverlayText("selectSpeed");
+
         curParameter = d3.select(this).property("value");
+        updateRunBtnTooltip();
         if (curAnimationInterval != null) {
             btn_run.prop("disabled", false);
         }
     })
 
     d3.select("#select_speed").on("change", function (d) {
-        updateOverlayText(6);
+        updateOverlayText("run");
+
         curAnimationInterval = d3.select(this).property("value");
+        updateRunBtnTooltip();
         if (curParameter != null) {
             btn_run.prop("disabled", false);
         }
@@ -463,22 +459,22 @@ function addButtons() {
         isPaused = !isPaused;
         btn_run.toggleClass('pause');
 
-
         $('.dropdown').prop('disabled', true);
         $("#select_speed").prop('disabled', true);
         $('#btn_clear').prop('disabled', false);
+        $('.checkbox-container').children().prop('disabled', true);
 
         // toggle text
         if (btn_run.text() == "Run") {
-            updateOverlayText(7);
+            updateOverlayText("pause");
             btn_run.text("Pause");
             btn_run.prop("title", "Pause.");
         } else if (btn_run.text() == "Pause") {
-            updateOverlayText(8);
+            updateOverlayText("resume");
             btn_run.text("Resume");
             btn_run.prop("title", "Resume.");
         } else {
-            updateOverlayText(9);
+            updateOverlayText("clear");
             btn_run.text("Pause");
             btn_run.prop("title", "Pause.");
         }
@@ -490,7 +486,6 @@ function addButtons() {
         }
 
         updateCheckboxesTextColors();
-        $('.checkbox-container').children().prop('disabled', true);
 
 
     });
@@ -498,8 +493,8 @@ function addButtons() {
 
     var btn_clear = $('#btn_clear');
     btn_clear.click(function () {
-        updateOverlayText(10);
-        
+        updateOverlayText("end");
+
         btn_clear.prop("disabled", true);
         if (!isPaused) { //if it's running, switch to pause state
             btn_run.prop("title", "Start animation.");
@@ -507,6 +502,7 @@ function addButtons() {
             isPaused = true;
         }
 
+        updateRunBtnTooltip();
 
         created = false;
         isInitialRun = true;
@@ -520,7 +516,6 @@ function addButtons() {
 
         $('.dropdown').prop('disabled', false);
         $('.checkbox-container').children().prop('disabled', false);
-        // $("#btn_run").prop("disabled", false);
 
         if (curAlgorithm != null && curSetup != null && curDistribution != null && curParameter != null && curAnimationInterval != null) {
             btn_run.prop("disabled", false);
@@ -538,6 +533,7 @@ function addButtons() {
     btn_clear.prop("disabled", true);
 }
 
+// returns the data group by the selectedKeys
 function getSelectedDataGroupedById(selectedOption, data, selectedKeys) {
     var dataToPlot = [];
     var curYMax = Number.NEGATIVE_INFINITY;
@@ -558,11 +554,11 @@ function getSelectedDataGroupedById(selectedOption, data, selectedKeys) {
     svg.selectAll("g.y.axis")
         .call(yAxis);
 
-    yLabel.text(yLabels[curParameter]);
+    yLabel.text(Y_LABELS[curParameter]);
 
     // update title
     graphTitle
-        .text(curAlgorithm.substring(12) + " (" + curSetup + "): " + yLabels[curParameter] + " vs. Time (s.)")
+        .text(curAlgorithm.substring(12) + " (" + curSetup + "): " + Y_LABELS[curParameter] + " vs. Time (s.)")
 
     // process each group using id's as keys
     var dataGroupedById = d3.nest()
@@ -577,7 +573,9 @@ function getSelectedDataGroupedById(selectedOption, data, selectedKeys) {
     return selectedDataGroupedById;
 }
 
-function updatePage(selectedOption, data, selectedKeys) {
+
+// update both the line graph and the ring
+function updatePage(selectedParameter, data, selectedKeys) {
 
     // clear line graph
     d3.selectAll(".line").remove();
@@ -589,10 +587,11 @@ function updatePage(selectedOption, data, selectedKeys) {
     var car_ids = d3.map(data, function (d) { return (d.id) }).keys();
     var matches = [];
     var opacities = [];
-
+    console.log("car_ids", car_ids);
     // extract the type of the id (excluding the number)
     for (i = 0; i < car_ids.length; ++i) {
-        var myRegex = /(.*)(_)(\d)*/g;
+        // var myRegex = /(.*)(_)(\d)*/g;
+        var myRegex = /([^_]*)(_)(.*)/g;// can be used once, so have to declared as local variable
         var match = myRegex.exec(car_ids[i]);
         matches.push(match[1]);// eg. extract "IDM" from "IDM_01"
     }
@@ -600,16 +599,36 @@ function updatePage(selectedOption, data, selectedKeys) {
     // get all unique ids
     var uniqueMatches = matches.filter(onlyUnique);
 
-    // use differnt opacities based on different type of ids
-    for (i = 0; i < matches.length; ++i) {
-        for (j = 0; j < uniqueMatches.length; ++j) {
-            if (matches[i] == uniqueMatches[j]) {
-                opacities.push(Math.pow(0.4, j + 0.9));
-                break;
-            }
+    // for each type of cars, decreases its corresponding capacities based on the number of 
+    // cars in the group
+    var curIndices = {};
+    var counts = {}
+    for (i = 0; i < uniqueMatches.length; ++i) {
+        console.log("uniqueMatch", uniqueMatches[i]);
+        curIndices[uniqueMatches[i]] = 0;
+        counts[uniqueMatches[i]] = 0;
+    }
+
+    // count number of cars in each group
+    for (i = 0; i < selectedKeys.length; ++i) {
+        var myRegex = /([^_]*)(_)(.*)/g;// can be used once, so have to declared as local variable
+        if (car_ids.includes(selectedKeys[i])) {
+            counts[myRegex.exec(selectedKeys[i])[1]] += 1;
         }
     }
-    updateGraph(getSelectedDataGroupedById(selectedOption, data, selectedKeys), opacities);
+
+    // use differnt opacities based on different type of ids
+    for (i = 0; i < selectedKeys.length; ++i) {
+        if (car_ids.includes(selectedKeys[i])) {
+            var myRegex = /([^_]*)(_)(.*)/g;
+            var selectedKeyMatch = myRegex.exec(selectedKeys[i])[1];
+            var j = uniqueMatches.indexOf(selectedKeyMatch);
+            opacities.push(1 - curIndices[selectedKeyMatch] * (1 / counts[selectedKeyMatch]));
+            curIndices[selectedKeyMatch] += 1;
+        }
+    }
+    
+    updateGraph(getSelectedDataGroupedById(selectedParameter, data, selectedKeys), opacities);
 
     //animate vehicles on the ring
     startRing(data);
@@ -640,7 +659,7 @@ function getLineColors(dataGroups) {
     var color = d3.scaleOrdinal(d3.schemeCategory10);  // set the colour scale
     var lineColors = [];
     for (i = 0; i < dataGroups.length; ++i) {
-        var myRegex = /(.*)(_)(.*)/g;
+        var myRegex = /([^_]*)(_)(.*)/g;
         var match = myRegex.exec(dataGroups[i].key);
         lineColors.push(color(match[1]));
     }
@@ -662,6 +681,7 @@ function updateGraph(dataGroups, opacities) {
                 return d.color = lineColors[index];
             })
             .style("opacity", function () {
+                // console.log(index, opacities[index]);
                 return opacities[index];
             })
 
@@ -695,106 +715,44 @@ function updateGraph(dataGroups, opacities) {
         .style("fill", "none")
 }
 
-/* Close when someone clicks on the "x" symbol inside the overlay */
-function closeNav() {
-    // document.getElementById("myNav").style.width = "0%";
-    var $overlay = $('#overlay');
-    $overlay.hide();
-    $overlay.data('current').css('z-index', 1);
-    dontShowAgain = true;
-}
-
-function updateOverlayText(tutorialOrder) {
-
-    console.log("updateOverlayText" + tutorialOrder);
-    if (dontShowAgain) {
-        return;
-    }
-    var $overlay = $('#overlay');
-    var elementDescriptions = {
-        0: ['#select_algorithm', "1. Please select an algorithm."],
-        1: ['#select_setup', "2. Please select a setup. In each setup, there are 22 vehicles in total in two different types. For example, \
-            \"IDM: 14, FUZN: 8\" means 14 IDM vehicles and 8 FUZN vehicles will be shown in animation. You can find the explanation of each type \
-            of vehicles in the legends below the ring."],
-        2: ['#select_distribution', "3. Please select a distribution."],
-        3: ['#btn_group2', "4. Please select vehicles to be plotted on the graph. In this tutorial, check one checkbox for demonstration purposes."],
-        4: ['#select_parameter', "5. Please select a parameter as a variable to be plotted in y-axis. Time(in seconds) is used in x-axis by default."],
-        5: ['#select_speed', "6. Please select an animation speed. This determines how fast the vehicles get updated in animation."],
-        6: ['#btn_run', "7. Please click the \"Run\" button to run the animation."],
-        7: ['#btn_run', "8. Click the \"Pause\" button to stop running the animation."],
-        8: ['#btn_run', "9. Click the \"Resume\" button to resume the animatoin."],
-        9: ['#btn_clear', "10. Before running next animatoin, click the \"Clear\" button to clear the current animation and the current selection."]
-    }
-
-    if (tutorialOrder < Object.keys(elementDescriptions).length) {
-        var curElementId = elementDescriptions[tutorialOrder][0];
-        var $element = $(curElementId);
-        $element.css('z-index', 11);
-        if (tutorialOrder > 1) {
-            var prevElementId = elementDescriptions[tutorialOrder - 1][0];
-            // hide the previous different element and focus on the current element only
-            if (curElementId != prevElementId) {
-                $(prevElementId).css('z-index', 10);
-            }
-        }
-        $('#overlay-text').text(elementDescriptions[tutorialOrder][1]);
-        $overlay.data('current', $element).show();
-    } else if (tutorialOrder == Object.keys(elementDescriptions).length) { // display the last msg before exiting the tutorial
-        $closeBtn = $('<div id="btn_close"><a href="javascript:void(0)" style="color: red" class="closebtn" onclick="closeNav()">&times;</a></div>').appendTo($overlay);
-        $('#overlay-text').text("Congratulations! You have finished the quick tour! Have fun!");
-        $("#btn_clear").css('z-index', 10);
-    } else {
-        $overlay.hide();
-        $overlay.data('current').css('z-index', 1);
-    }
-}
-// filename_dict algo+setup: filename
-// algoSetupDict algo: setup
-//
 //save algorithm strings, setup strings from filenames, and create a dictionary with algorithm as keys and setup as values
-function extractAlgorithmsAndSetups(algorithms, algoSetupDistFilenameDict, algoSetupDict, filenames) {
+function extractAlgorithmsAndSetups(algorithms, algoSetupDistFilenameDict, algoSetupDistDict, pathsToFiles) {
 
-    //original "data/raw_data/IDM_AVRider_AUG--0IDM_22AUG--sugiyama_20191014-1314411571084081.113794-emission.csv"
-    //current format: data/raw_data/IDM_AVRider_AUG--0IDM_22AUG
-    //latest format: data/raw_data/IDM_AVRider_AUG--0IDM_22AUG--platooned.csv
-    // {ALGO:{SETUP: {DISTRIBUTION}}}
-
+    //latest format of item in pathsToFiles: data/raw_data/IDM_AVRider_AUG--0IDM_22AUG--platooned.csv
     var algos = [];
-    for (i = 0; i < filenames.length; ++i) {
+    for (i = 0; i < pathsToFiles.length; ++i) {
 
         // var myRegex = /(.*)(--)(.*)(--)(.*)/g;
-        var myRegex = /(.*)(--)(.*)(--)(.*)(.csv)/g;
-        var filename = filenames[i];
+        var pattern = /(.*)(--)(.*)(--)(.*)(.csv)/g;
+        var filename = pathsToFiles[i];
 
         //replace string "abc/" with empty to eliminate the directory str and extract the filename
         var filename = filename.replace(/^.*[\\\/]/, '');
 
+        // group index for each str in the pattern
         var ALGO_INDEX = 1;
         var SETUP_INDEX = 3;
         var DISTRIBUTION_INDEX = 5;
 
-        var match = myRegex.exec(filename);
+        var match = pattern.exec(filename);
         algos.push(match[ALGO_INDEX]);
+
         var algo_str = match[ALGO_INDEX];
         var setup_str = match[SETUP_INDEX];
         var dist_str = match[DISTRIBUTION_INDEX];
 
-        // if (algoSetupDict[algo_str] === undefined) {
-        //     algoSetupDict[algo_str] = [];
-        // }
-
-        // algoSetupDict[algo_str].push(match[SETUP_INDEX]);
-
-        if (algoSetupDict[algo_str] === undefined) {
-            algoSetupDict[algo_str] = {};
+        // populating the nested dictionary
+        if (algoSetupDistDict[algo_str] === undefined) {
+            algoSetupDistDict[algo_str] = {};
         }
-        if (!(setup_str in algoSetupDict[algo_str])) {
-            algoSetupDict[algo_str][setup_str] = [];
+        if (!(setup_str in algoSetupDistDict[algo_str])) {
+            algoSetupDistDict[algo_str][setup_str] = [];
         }
-        algoSetupDict[algo_str][setup_str].push(dist_str);
+        algoSetupDistDict[algo_str][setup_str].push(dist_str);
 
+        // poludating the dict which has this structure: {algoSetupDist: filname}
         var key = match[ALGO_INDEX] + match[SETUP_INDEX] + match[DISTRIBUTION_INDEX];
-        algoSetupDistFilenameDict[key] = filenames[i];
+        algoSetupDistFilenameDict[key] = pathsToFiles[i];
     }
 
     // save unique algorithm strings
@@ -809,7 +767,7 @@ function loadMetricsFileNames(metricsFilenameDict, filenames) {
         var myRegex = /(.*)(--)(.*)(\.)(csv)/g;
         var filename = filenames[i];
         filename = filename.replace(/^.*[\\\/]/, '')
-        filename = filename.substring(4); //ignore Big_0IDM_22AUG
+        filename = filename.substring(4); //ignore the superscript "Big_" in "Big_0IDM_22AUG"
         var matches = myRegex.exec(filename);
         var setup_str = matches[1];
         var distribution_str = matches[3];
@@ -819,7 +777,7 @@ function loadMetricsFileNames(metricsFilenameDict, filenames) {
 
 function changeverticalTimeLinePos(curr_x) {
     // curr_x is the time step in sec.
-    if (curr_x < 600.2) {
+    if (curr_x < xMax.value) {
         d3.select("#vertical_time_line")
             .attr("x1", x(curr_x))
             .attr("x2", x(curr_x))
@@ -848,7 +806,6 @@ function loadMetricsFile(filename) {
             .enter()
             .append("th")
             .text(function (column) { return column; })
-        // .style("font-size", "12px");
 
         // create a row for each object in the data
         var rows = tbody.selectAll("tr")
@@ -857,7 +814,7 @@ function loadMetricsFile(filename) {
             .append("tr");
 
         // create a cell in each row for each column
-        var cells = rows.selectAll("td")
+        rows.selectAll("td")
             .data(function (row) {
                 return columns.map(function (column) {
                     return { column: column, value: row[column] };
@@ -876,38 +833,16 @@ function loadMetricsFile(filename) {
     } else {
         $("#table_title").hide();
     }
-    d3.csv(filename, function (error, data) {
+    d3.csv(filename + "?" + (new Date()).getTime(), function (error, data) {
         if (error) throw error;
 
-        var metrics_table = tabulate(data, ["stableT", "stableSpd", "MaxGap", "AvgFuelRate", "VMT"]);
+        tabulate(data, ["stableT", "stableSpd", "MaxGap", "AvgFuelRate", "VMT"]);
     });
 
 
 }
 
-function functionConfirm(msg, myYes, myNo) {
-
-    var confirmBox = $("#confirm");
-    confirmBox.find(".message").text(msg);
-    confirmBox.find(".yes,.no").unbind().click(function () {
-        confirmBox.hide();
-    });
-    confirmBox.find(".yes").click(myYes);
-    confirmBox.find(".no").click(myNo);
-    confirmBox.show();
-}
-
-function tutorialConfirm() {
-    functionConfirm("Hi! Would you like a quick tour?", function yes() {
-        updateOverlayText(0);
-    },
-        function no() {
-            dontShowAgain = true;
-            var $overlay = $('#overlay');
-            $overlay.hide();
-        });
-}
-
+// ********************************* ring ******************************
 var id;
 var created = false;
 var namesofHV;
@@ -996,6 +931,8 @@ function updateTitle(title) {
     document.getElementById("paragraph").innerHTML = result;
 }
 
+
+// launch the page
 function launch() {
     addLineGraph();
     addButtons();
