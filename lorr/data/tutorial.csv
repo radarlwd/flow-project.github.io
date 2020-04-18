@@ -1,0 +1,13 @@
+key,id,function,description
+demoVideo,#video,loadVideoPage,
+introduction,#confirm,tutorialConfirm,Welcome!
+selectAlgorithm,#select_algorithm,,Please select an algorithm.
+selectSetup,#select_setup,,"Please select a setup. In each setup, there are 22 vehicles in total in two different types. For example, ""IDM: 14, FUZN: 8"" means 14 IDM vehicles and 8 FUZN vehicles will be shown in animation. You can find the explanation of each type of vehicles in the legends below the ring."
+selectDistribution,#select_distribution,,Please select a distribution.
+checkVehicleID,#btn_group2,,"Please select vehicles to be plotted on the graph. In this tutorial, check one checkbox for demonstration purposes."
+selectParameter,#select_parameter,,Please select a parameter as a variable to be plotted in y-axis. Time(in seconds) is used in x-axis by default.
+selectSpeed,#select_speed,,Please select an animation speed. This determines how fast the vehicles get updated in animation.
+run,#btn_run,,"Please click the ""Run"" button to run the animation."
+pause,#btn_run,,"Click the ""Pause"" button to stop running the animation."
+resume,#btn_run,,"Click the ""Resume"" button to resume the animatoin."
+clear,#btn_clear,,"Before running next animatoin, click the ""Clear"" button to clear the current animation and the current selection."
