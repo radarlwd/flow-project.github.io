@@ -33,7 +33,7 @@ function updateOverlayText(key) {
     if (discriptionDict == null) {
         discriptionDict = {};
         // all description are stored in this file
-        d3.csv('data/tutorial.csv', function (error, data) {
+        d3.csv('./data/tutorial.csv', function (error, data) {
             if (error) throw error;
             for (i = 0; i < data.length; ++i) {
                 var item = {};

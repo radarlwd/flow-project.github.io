@@ -6,11 +6,11 @@
 #
 # After running this program, the "output_file" should look like the following:
 #
-# FILE_LIST = ["data/raw_data/IDM_AVRider_PI--15IDM_7PI--EVEN.csv", 
-# 	       "data/raw_data/IDM_AVRider_MLYAU2--0IDM_22MLYAU2--platooned.csv"];
+# FILE_LIST = ["./data/raw_data/IDM_AVRider_PI--15IDM_7PI--EVEN.csv", 
+# 	       "./data/raw_data/IDM_AVRider_MLYAU2--0IDM_22MLYAU2--platooned.csv"];
 # 
-# METRICS_FILE_LIST = ["data/metrics/Big_19IDM_3LACC--EVEN.csv", 
-#		       "data/metrics/Big_3IDM_19MLYAU1--platooned.csv"];
+# METRICS_FILE_LIST = ["./data/metrics/Big_19IDM_3LACC--EVEN.csv", 
+#		       "./data/metrics/Big_3IDM_19MLYAU1--platooned.csv"];
 
 import os
 
@@ -25,7 +25,7 @@ for path, subdirs, files in os.walk(raw_data_path):
    for filename in files:
      f = os.path.join(path, filename)
      if str(f)[-3:] == "csv":
-     	content += "\"" + str(f)[3:] + '\", ' + os.linesep
+     	content += "\"./" + str(f)[3:] + '\", ' + os.linesep
      #a.write(str(f) + ', ' + os.linesep)
 content = content[:-3]
 content += "]"
@@ -40,7 +40,7 @@ for path, subdirs, files in os.walk(metrics_path):
    for filename in files:
      f = os.path.join(path, filename)
      if str(f)[-3:] == "csv":
-     	content += "\"" + str(f)[3:] + '\", ' + os.linesep
+     	content += "\"./" + str(f)[3:] + '\", ' + os.linesep
      #a.write(str(f) + ', ' + os.linesep)
 content = content[:-3]
 content += "]"
