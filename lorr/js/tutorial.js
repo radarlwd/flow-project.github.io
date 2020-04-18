@@ -141,7 +141,7 @@ function loadVideoPage() {
 
     var url = "https://www.youtube.com/watch?v=P7xx9uH2i7w";// follow this format
     var id = url.split("?v=")[1];
-    var embedLink = "http://www.youtube.com/embed/" + id;
+    var embedLink = "https://www.youtube.com/embed/" + id;
     $('<iframe id="video" width=1000px height=500px display:block src=' + embedLink + ' frameborder="0" allowfullscreen></iframe><br />').appendTo($videoContainer);
     $('<a id="skip" title="skip" href="javascript:skip()" style="font-size: 30px;">Skip</a><br/>').appendTo($videoContainer);
 }
